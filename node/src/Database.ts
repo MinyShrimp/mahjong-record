@@ -25,34 +25,43 @@ export default class Database {
         this.connection.query(sql, callback);
     }
 
+    private _promise = async (sql: string, str: string) => {
+        return new Promise((resolve, reject) => {
+            this.connection.query(sql, (err, res) => {
+                if(err) { reject(Error(str)); }
+                else { resolve(res); }
+            });
+        });
+    }
+
     //////////////////////////////////////////////////
     // UserRecord
     //////////////////////////////////////////////////
-    public findUserByUserRecord(name: string, callback: Function) {
+    public findUserByUserRecord(name: string) {
         let sql = `
             SELECT ID, Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord 
             WHERE Name = "${name}";
         `;
-        this.connection.query(sql, callback);
+        return this._promise(sql, "find user error");
     }
 
-    public updateUserByUserRecord(id: string, data: string, callback: Function) {
+    public updateUserByUserRecord(id: string, data: string) {
         let sql = `
             UPDATE UserRecord
             SET ${data}
             WHERE ID = ${id};
         `;
-        this.connection.query(sql, callback);
+        return this._promise(sql, "update user error");
     }
 
-    public insertUserByUserRecord(data: string, callback: Function) {
+    public insertUserByUserRecord(data: string) {
         let sql = `
             INSERT INTO 
             UserRecord(Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4) 
             VALUES(${data});
         `;
-        this.connection.query(sql, callback);
+        return this._promise(sql, "insert user error");
     }
 
     public selectAllByUserRecord() {
@@ -62,28 +71,23 @@ export default class Database {
             FROM UserRecord
             ORDER BY Uma DESC;
         `;
-        return new Promise((resolve, reject) => {
-            this.connection.query(sql, (err, res) => {
-                if(err) { reject(Error("select error")); }
-                else { resolve(res); }
-            });
-        });
+        return this._promise(sql, "select user error");
     }
 
     //////////////////////////////////////////////////
     // IndexRecord
     //////////////////////////////////////////////////
-    public getRecentIndexByIndexRecord(callback: Function) {
+    public getRecentIndexByIndexRecord() {
         let sql = 'SELECT MAX(RecordIndex) AS maxindex FROM IndexRecord;';
-        this.connection.query(sql, callback);
+        return this._promise(sql, "select index error");
     }
 
-    public insertIndexRecord(data: string, callback: Function) {
+    public insertIndexRecord(data: string) {
         let sql = `
             INSERT INTO 
             IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
             ${data};
         `;
-        this.connection.query(sql, callback);
+        return this._promise(sql, "insert index error");
     }
 }

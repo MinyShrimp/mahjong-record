@@ -52,7 +52,7 @@ const AddRecord = (props: any) => {
         make_post_data();
 
         var res: Response = await fetch(
-            Config.serverIP + "/api/insertRecord",
+            Config.serverIP + "/api/record",
             {
                 method: "POST",
                 headers: {
@@ -107,7 +107,9 @@ const AddRecord = (props: any) => {
                                         />
 
                                         <datalist id="names">
-                                            {}
+                                            {
+                                                //TODO
+                                            }
                                         </datalist>
                                     </Col>
                                     <Col xs={3}>

@@ -13,7 +13,7 @@ const Record = () => {
 
     const get_users = async () => {
         var res: Response = await fetch(
-            Config.serverIP + "/api/getUsers",
+            Config.serverIP + "/api/users",
             {
                 method: "GET",
                 headers: {

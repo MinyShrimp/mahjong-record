@@ -11,7 +11,7 @@ function App() {
         
         <Routes>
             <Route path="/" element={<Record />} />
-            <Route path="/recent" element={<div>hi</div>} />
+            <Route path="/recent" element={<div>TODO</div>} />
         </Routes>
         
         <Navbar bg="light" fixed="bottom">
