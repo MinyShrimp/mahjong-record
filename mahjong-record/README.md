@@ -10,7 +10,6 @@ yarn add @types/react-bootstrap
 yarn add react-datepicker @types/react-datepicker
 yarn add redux react-redux @types/redux @types/react-redux
 yarn add react-router-dom @types/react-router-dom
-yarn add react-autocomplete @types/react-autocomplete
 ```
 
 ## 사이트

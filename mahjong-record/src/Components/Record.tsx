@@ -1,25 +1,46 @@
-import React from "react";
-import { Navbar, Container, Nav, Button, Table, Form, NavDropdown } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Navbar, Container, Nav, Button, Table, Form } from "react-bootstrap";
 import "./Record.css";
 
 import AddRecord from './AddRecord';
+import { RankingInfo } from "../ToyBox/Interfaces";
+import { roundToTwo, numberWithCommas }  from "../ToyBox/Functions";
+import Config          from "../ToyBox/Config";
 
 const Record = () => {
-    const [modalShow, setModalShow] = React.useState(false);
+    const [modalShow, setModalShow] = useState(false);
+    const [userDatas, setUserDatas] = useState<Array<RankingInfo>>([]);
+
+    const get_users = async () => {
+        var res: Response = await fetch(
+            Config.serverIP + "/api/getUsers",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": Config.token
+                }
+            }
+        );
+
+        if( res.ok ) {
+            let datas = await res.json();
+            setUserDatas(datas);
+        } else {
+            console.error(res);
+        }
+    }
+
+    useEffect(() => {
+        get_users();
+    }, []);
 
     return (
         <>
             <Navbar bg="light" fixed="top">
                 <Container>
-                    <Navbar.Brand href="#">검색</Navbar.Brand>
+                    <Navbar.Brand>순위</Navbar.Brand>
                     <Nav className="me-auto">
-                        <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#">Action</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Another action</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Something</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Separated link</NavDropdown.Item>
-                        </NavDropdown>
-
                         <Form.Check label={`20국 이상`} className="nav-item" id="check" />
                     </Nav>
 
@@ -53,25 +74,31 @@ const Record = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>김회민</td>
-                            <td>458</td>
-                            <td>13.88</td>
-                            <td>201,500</td>
-                            <td>6,106</td>
-                            <td>52,300</td>
-                            <td>5</td>
-                            <td>0.15</td>
-                            <td>33</td>
-                            <td>13</td>
-                            <td>11</td>
-                            <td>7</td>
-                            <td>2</td>
-                            <td>0.39</td>
-                            <td>0.73</td>
-                            <td>0.06</td>
-                        </tr>
+                        {
+                            userDatas.map((user: RankingInfo, index: number) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{ index + 1 }</td>
+                                        <td>{ user.Name }</td>
+                                        <td>{ numberWithCommas( user.Uma ) }</td>
+                                        <td>{ numberWithCommas( roundToTwo( user.Uma / user.Count ) ) }</td>
+                                        <td>{ numberWithCommas( user.Score ) }</td>
+                                        <td>{ numberWithCommas( Math.round( user.Score / user.Count ) ) }</td>
+                                        <td>{ numberWithCommas( user.MaxScore ) }</td>
+                                        <td>{ numberWithCommas( user.Star ) }</td>
+                                        <td>{ roundToTwo( user.Star / user.Count ) }</td>
+                                        <td>{ user.Count }</td>
+                                        <td>{ user.Rank_1 }</td>
+                                        <td>{ user.Rank_2 }</td>
+                                        <td>{ user.Rank_3 }</td>
+                                        <td>{ user.Rank_4 }</td>
+                                        <td>{ roundToTwo( user.Rank_1 / user.Count ) }</td>
+                                        <td>{ roundToTwo( ( user.Rank_1 + user.Rank_2 ) / user.Count ) }</td>
+                                        <td>{ roundToTwo( user.Rank_4 / user.Count ) }</td>
+                                    </tr>
+                                );
+                            })
+                        }
                     </tbody>
                 </Table>
             </div>
@@ -84,7 +111,10 @@ const Record = () => {
             >+</Button>
             <AddRecord 
                 show={modalShow}
-                onHide={() => setModalShow(false)}
+                onHide={() => {
+                    setModalShow(false);
+                    get_users();
+                }}
             />
         </>
     );

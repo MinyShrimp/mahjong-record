@@ -1,5 +1,6 @@
 
 export interface Info {
+    seat:    number,
     name:    string,
     score:   string,
     star:    string,

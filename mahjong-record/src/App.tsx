@@ -1,21 +1,38 @@
 import React from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Route, Routes, Link } from 'react-router-dom';
+import Record from './Components/Record';
+
 import "./App.css";
-import Record  from './Components/Record';
 
 function App() {
   return (
     <div className="App">
         
-        <Record />
-
+        <Routes>
+            <Route path="/" element={<Record />} />
+            <Route path="/recent" element={<div>hi</div>} />
+        </Routes>
+        
         <Navbar bg="light" fixed="bottom">
             <Container>
-                <Nav.Link href="#">순위</Nav.Link>
-                <Nav.Link href="#">최근 기록</Nav.Link>
-                <Nav.Link href="#">후원목록</Nav.Link>
-                <Nav.Link href="#">업적</Nav.Link>
-                <Nav.Link href="#">기타</Nav.Link>
+                <Nav.Link as={Link} to="/">
+                    순위
+                </Nav.Link>
+                <Nav.Link as={Link} to="/recent">
+                    최근 기록
+                </Nav.Link>
+                {
+                    // <Nav.Link as={Link} to="/">
+                    //     후원목록
+                    // </Nav.Link>
+                    // <Nav.Link as={Link} to="/">
+                    //     업적
+                    // </Nav.Link>
+                }
+                <Nav.Link as={Link} to="/">
+                    기타
+                </Nav.Link>
             </Container>
         </Navbar>
 

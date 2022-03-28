@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
-import "./AddRecord.css";
+
 import SupportHolder from "./SupportHolder";
 import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
-import Autocomplete  from "react-autocomplete";
-
 import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
+
+import "./AddRecord.css";
 
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
-    const [supportID, supportIDChange] = useState<number>(0);
+    //const [supportID, supportIDChange] = useState<number>(0);
     const [supportInfos, supportInfosChange] = useState<SupportInfo[]>([]);
 
     const [perpectID, perpectIDChange] = useState<number>(0);
@@ -20,10 +20,10 @@ const AddRecord = (props: any) => {
     const [deposit, depositChange] = useState<string>("");
 
     const normal_infos = [
-        { name: "", score: "", star: "", perpect: "" },
-        { name: "", score: "", star: "", perpect: "" },
-        { name: "", score: "", star: "", perpect: "" },
-        { name: "", score: "", star: "", perpect: "" },
+        { seat: 0, name: "", score: "", star: "", perpect: "" },
+        { seat: 1, name: "", score: "", star: "", perpect: "" },
+        { seat: 2, name: "", score: "", star: "", perpect: "" },
+        { seat: 3, name: "", score: "", star: "", perpect: "" },
     ];
     const [infos, infosChange] = useState<Info[]>(normal_infos);
 
@@ -52,7 +52,7 @@ const AddRecord = (props: any) => {
         make_post_data();
 
         var res: Response = await fetch(
-            "http://localhost:8001/api/insertRecord",
+            Config.serverIP + "/api/insertRecord",
             {
                 method: "POST",
                 headers: {
@@ -77,7 +77,7 @@ const AddRecord = (props: any) => {
         }
     }
 
-    useEffect(init_data, [props.show]);
+    useEffect(() => { init_data(); }, [props.show]);
     
     return (
         <Modal
