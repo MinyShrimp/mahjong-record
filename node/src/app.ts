@@ -4,17 +4,18 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { Info, Test, ErrorCode } from "./Interfaces";
 import { isCleanData } from "./Functions";
+import Config from "./Config";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 const connection = createConnection({
-    host: '172.17.0.2',
-    user: 'root',
-    port: 3306,
-    password: 'root',
-    database: 'Mahjong'
+    host:     Config.MySQL.ip,
+    user:     Config.MySQL.id,
+    port:     Config.MySQL.port,
+    password: Config.MySQL.pwd,
+    database: Config.MySQL.database
 });
 connection.connect();
 
@@ -27,6 +28,14 @@ app.get('/', (req: Request, res: Response) => {
             res.send(rows);
         }
     });
+});
+
+app.use('/api/:id', (req: Request, res: Response, next) => {
+    if( req.get('token') !== Config.token ) {
+        res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
+    } else {
+        next();
+    }
 });
 
 app.post('/api/insertRecord', (req: Request, res: Response) => {

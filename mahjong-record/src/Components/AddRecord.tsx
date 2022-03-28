@@ -4,7 +4,8 @@ import "./AddRecord.css";
 import SupportHolder from "./SupportHolder";
 import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
-import Autocomplete from "react-autocomplete";
+import Config        from "../ToyBox/Config";
+import Autocomplete  from "react-autocomplete";
 
 import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
 
@@ -56,6 +57,7 @@ const AddRecord = (props: any) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "token": Config.token
                 },
                 body: JSON.stringify([...infos, deposit]),
             }
