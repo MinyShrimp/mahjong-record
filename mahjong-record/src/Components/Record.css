@@ -1,0 +1,15 @@
+
+.btn-fixed {
+    position: fixed;
+    bottom: 68px;
+    right: 16px;
+}
+
+.Record-Main-Page {
+    padding: 64px 8px 68px;
+    min-width: 880px;
+}
+
+.center {
+    margin: auto;
+}

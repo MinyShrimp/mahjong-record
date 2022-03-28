@@ -1,0 +1,18 @@
+.App {
+    width: 100vw;
+    height: 100vh;
+}
+
+.Left {
+    background: red;
+    display: inline-block;
+    width: 20%;
+    height: 100%;
+}
+
+.Right {
+    background: blue;
+    display: inline-block;
+    width: 80%;
+    height: 100%;
+}
