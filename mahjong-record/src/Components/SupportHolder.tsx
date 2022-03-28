@@ -1,11 +1,6 @@
 import React from "react";
 import { Button, Form, Row, Col } from "react-bootstrap";
-
-export interface SupportInfo {
-    id: number,
-    name: string,
-    content: string
-};
+import { SupportInfo } from "../ToyBox/Interfaces";
 
 const SupportItem = (props: any) => {
     return(

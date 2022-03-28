@@ -1,11 +1,6 @@
 import React from "react";
-import { Button, Form, Row, Col } from "react-bootstrap";
-
-export interface PerpectInfo {
-    id: number,
-    name: string,
-    select_id: number
-};
+import { Button, Form, Row, Col, Dropdown } from "react-bootstrap";
+import { PerpectInfo, Info } from "../ToyBox/Interfaces";
 
 const PerpectItem = (props: any) => {
     const perpects = [
@@ -34,24 +29,28 @@ const PerpectItem = (props: any) => {
                 역만
             </Col>
             <Col xs={3}>
-                <Form.Control 
+                <Form.Select
                     placeholder="이름" 
                     onChange={(e) => {
-                        let _tmp = [...props.infos];
+                        let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp[index].name = e.target.value; _tmp[index].select_id = -1; }
-                        props.infosChange(_tmp);
+                        props.perpectInfosChange(_tmp);
                     }}
                     value={props.value.name}
-                />
+                >
+                    {
+                        props.infos.map((_tmp: Info, index: number) => _tmp.name !== '' && <option value={_tmp.name} key={index}> {_tmp.name} </option>)
+                    }
+                </Form.Select>
             </Col>
             <Col>
                 <Form.Select
                     onChange={(e) => {
-                        let _tmp = [...props.infos];
+                        let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp[index].select_id = e.target.value; }
-                        props.infosChange(_tmp);
+                        props.perpectInfosChange(_tmp);
                     }}
                     value={ props.value.select_id }
                 >
@@ -65,10 +64,10 @@ const PerpectItem = (props: any) => {
                 <Button 
                     className="btn-danger"
                     onClick={()=>{
-                        let _tmp = [...props.infos];
+                        let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp.splice(index, 1); }
-                        props.infosChange(_tmp);
+                        props.perpectInfosChange(_tmp);
                     }}
                 >-</Button>
             </Col>
@@ -84,8 +83,9 @@ const PerpectHolder = (props: any) => {
                     return <PerpectItem
                         key={index}
                         value={value}
-                        infos={props.perpectInfos}
-                        infosChange={props.perpectInfosChange}
+                        infos={props.infos}
+                        perpectInfos={props.perpectInfos}
+                        perpectInfosChange={props.perpectInfosChange}
                     />
                 })
             }

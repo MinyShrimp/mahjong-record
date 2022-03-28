@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import "./AddRecord.css";
-import SupportHolder, { SupportInfo } from "./SupportHolder";
-import PerpectHolder, { PerpectInfo } from "./PerpectHolder";
+import SupportHolder from "./SupportHolder";
+import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Autocomplete from "react-autocomplete";
 
-interface Info {
-    name:    string,
-    score:   string,
-    star:    string,
-    perpect: string
-};
+import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
 
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
@@ -110,7 +105,7 @@ const AddRecord = (props: any) => {
                                         />
 
                                         <datalist id="names">
-                                            <option value="김회민"/>
+                                            {}
                                         </datalist>
                                     </Col>
                                     <Col xs={3}>
@@ -149,6 +144,7 @@ const AddRecord = (props: any) => {
                     />
 
                     <PerpectHolder 
+                        infos={infos}
                         perpectInfos={perpectInfos}
                         perpectInfosChange={perpectInfosChange}
                     />
@@ -165,16 +161,18 @@ const AddRecord = (props: any) => {
                                 min="0"
                             />
                         </Col>
+                        {/*
                         <Col>
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {
-                                    //supportInfosChange( [...supportInfos, { id: supportID, name: "", content: "" }] );
-                                    //supportIDChange(supportID + 1);
+                                    supportInfosChange( [...supportInfos, { id: supportID, name: "", content: "" }] );
+                                    supportIDChange(supportID + 1);
                                 }}
                             > 후원 추가 </Button>
                         </Col>
-                        <Col>
+                        */}
+                        <Col xs={2}>
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {
