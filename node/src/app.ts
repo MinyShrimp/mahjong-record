@@ -40,6 +40,8 @@ app.post('/api/record', async (req: Request, res: Response) => {
     
         let data_test: Test = isCleanData(data, deposit);
         data = QuickSort(data);
+
+        const plus_uma = [ 20, 10, -10, -20 ];
         
         if(data_test.result) {
             data.forEach(async (value: Info, index: number) => {
@@ -51,7 +53,7 @@ app.post('/api/record', async (req: Request, res: Response) => {
                     let score       = parseInt(value.score);
                     let rank        = [0, 0, 0, 0];
                     rank[index]     = 1;
-                    let uma         = Math.round( score / 1000 );
+                    let uma         = Math.round( score / 1000 ) + plus_uma[index];
                     let star        = value.star === '' ? 0 : parseInt(value.star);
                     
                     let sql = `"${name}", ${uma}, ${score}, ${score}, ${star}, 1, ${rank.toString()}`;
@@ -62,7 +64,7 @@ app.post('/api/record', async (req: Request, res: Response) => {
 
                     let id       = user_data.ID;
                     let score    = parseInt(user_data.Score) + _score;
-                    let uma      = parseInt(user_data.Uma) + Math.round( _score / 1000 );
+                    let uma      = parseInt(user_data.Uma) + Math.round( _score / 1000 ) + plus_uma[index];
                     let maxscore = Math.max( parseInt(user_data.MaxScore), _score );
                     let now_star = value.star === '' ? 0 : parseInt(value.star);
                     let star     = parseInt(user_data.Star) + now_star;
@@ -83,7 +85,8 @@ app.post('/api/record', async (req: Request, res: Response) => {
             
             const rows = await Database.getInstance().getRecentIndexByIndexRecord();
             let lastIndex = JSON.parse(JSON.stringify(rows))[0].maxindex;
-            let recordIndex = lastIndex !== null ? 1 : lastIndex + 1;
+            let recordIndex = lastIndex !== null ? lastIndex + 1 : 1;
+            //let recordIndex = 0;
 
             let sql_data = "VALUES ";
             data.forEach((value: Info, index: number) => {
@@ -91,7 +94,7 @@ app.post('/api/record', async (req: Request, res: Response) => {
                 let score       = parseInt(value.score);
                 let ranking     = index + 1;
                 let seat        = value.seat;
-                let uma         = Math.round( score / 1000 );
+                let uma         = Math.round( score / 1000 ) + plus_uma[index];
                 let star        = value.star === '' ? 0 : parseInt(value.star);
                 let perpect     = value.perpect;
             
@@ -111,6 +114,16 @@ app.post('/api/record', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/api/records',async (req: Request, res: Response) => {
+    try {
+        const rows = await Database.getInstance().getRecentAllByIndexRecord();
+        res.send(JSON.stringify(rows));
+    } catch(e) {
+        console.log(e);
+        res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
+    }
+});
+
 app.get('/api/users', async (req: Request, res: Response) => {
     try {
         const data = await Database.getInstance().selectAllByUserRecord();
@@ -119,10 +132,6 @@ app.get('/api/users', async (req: Request, res: Response) => {
         console.log(e);
         res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
     }
-});
-
-app.get('/api/test', (req: Request, res: Response) => {
-    res.send(req.query)
 });
 
 app.listen('8001', () => {});

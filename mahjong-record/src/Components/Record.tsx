@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Container, Nav, Button, Table, Form } from "react-bootstrap";
-import "./Record.css";
 
 import AddRecord from './AddRecord';
 import { RankingInfo } from "../ToyBox/Interfaces";
-import { roundToTwo, numberWithCommas }  from "../ToyBox/Functions";
-import Config          from "../ToyBox/Config";
+import { roundToTwo, numberWithCommas } from "../ToyBox/Functions";
+import Config from "../ToyBox/Config";
 
 const Record = () => {
     const [modalShow, setModalShow] = useState(false);
@@ -16,10 +15,7 @@ const Record = () => {
             Config.serverIP + "/api/users",
             {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "token": Config.token
-                }
+                headers: Config.headers
             }
         );
 
@@ -50,7 +46,7 @@ const Record = () => {
                 </Container>
             </Navbar>
 
-            <div className="Record-Main-Page">
+            <div className="Main-Page">
                 <Table striped bordered hover className="text-center">
                     <thead>
                         <tr>
@@ -92,9 +88,9 @@ const Record = () => {
                                         <td>{ user.Rank_2 }</td>
                                         <td>{ user.Rank_3 }</td>
                                         <td>{ user.Rank_4 }</td>
-                                        <td>{ roundToTwo( user.Rank_1 / user.Count ) }</td>
-                                        <td>{ roundToTwo( ( user.Rank_1 + user.Rank_2 ) / user.Count ) }</td>
-                                        <td>{ roundToTwo( user.Rank_4 / user.Count ) }</td>
+                                        <td>{ roundToTwo( user.Rank_1 / user.Count ) * 100 }</td>
+                                        <td>{ roundToTwo( ( user.Rank_1 + user.Rank_2 ) / user.Count ) * 100 }</td>
+                                        <td>{ roundToTwo( user.Rank_4 / user.Count ) * 100 }</td>
                                     </tr>
                                 );
                             })

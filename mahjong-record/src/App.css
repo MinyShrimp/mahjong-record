@@ -16,3 +16,40 @@
     width: 80%;
     height: 100%;
 }
+
+.btn-fixed {
+    position: fixed;
+    bottom: 68px;
+    right: 16px;
+}
+
+.Main-Page {
+    padding: 64px 8px 68px;
+    min-width: 880px;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+.center {
+    margin: auto;
+}
+
+.form-title {
+    text-align: center;
+    align-self: center;
+}
+
+.bg-blue {
+    background: #bbdefb;
+}
+
+.tfoot > tr {
+    border: none;
+    padding-top: 0;
+}
+
+.tfoot > tr > td {
+    border: none;
+    padding-top: 0;
+    padding-bottom: 1px;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Route, Routes, Link } from 'react-router-dom';
 import Record from './Components/Record';
+import Recent from "./Components/Recent";
 
 import "./App.css";
 
@@ -11,7 +12,7 @@ function App() {
         
         <Routes>
             <Route path="/" element={<Record />} />
-            <Route path="/recent" element={<div>TODO</div>} />
+            <Route path="/recent" element={<Recent />} />
         </Routes>
         
         <Navbar bg="light" fixed="bottom">
@@ -30,7 +31,7 @@ function App() {
                     //     업적
                     // </Nav.Link>
                 }
-                <Nav.Link as={Link} to="/">
+                <Nav.Link as={Link} to="#">
                     기타
                 </Nav.Link>
             </Container>

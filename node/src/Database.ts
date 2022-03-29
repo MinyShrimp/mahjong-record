@@ -66,8 +66,7 @@ export default class Database {
 
     public selectAllByUserRecord() {
         let sql = `
-            SELECT
-            Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
+            SELECT Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord
             ORDER BY Uma DESC;
         `;
@@ -89,5 +88,28 @@ export default class Database {
             ${data};
         `;
         return this._promise(sql, "insert index error");
+    }
+
+    public getRecentAllByIndexRecord() {
+        let sql = `
+            SELECT 
+                b.RecordIndex, a.Names, a.Rankings, a.Scores, 
+                a.Seats, a.Perpects, a.Umas, a.Stars, 
+                b.UpdateTime, b.Deposit
+            FROM IndexRecord AS b
+            JOIN (
+                SELECT 
+                    RecordIndex, GROUP_CONCAT(Name) AS Names, 
+                    GROUP_CONCAT(Ranking) AS Rankings, GROUP_CONCAT(Score) AS Scores, 
+                    GROUP_CONCAT(Seat) AS Seats, GROUP_CONCAT(Perpect) AS Perpects,
+                    GROUP_CONCAT(Uma) AS Umas, GROUP_CONCAT(Star) AS Stars
+                FROM IndexRecord
+                GROUP BY RecordIndex
+            ) AS a
+            ON a.RecordIndex=b.RecordIndex
+            WHERE Ranking=1
+            ORDER BY RecordIndex DESC;
+        `;
+        return this._promise(sql, "select all index error");
     }
 }

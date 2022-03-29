@@ -7,8 +7,6 @@ import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
 import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
 
-import "./AddRecord.css";
-
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
     //const [supportID, supportIDChange] = useState<number>(0);
@@ -55,10 +53,7 @@ const AddRecord = (props: any) => {
             Config.serverIP + "/api/record",
             {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "token": Config.token
-                },
+                headers: Config.headers,
                 body: JSON.stringify([...infos, deposit]),
             }
         );

@@ -21,13 +21,30 @@ export interface RankingInfo {
 };
 
 export interface SupportInfo {
-    id: number,
-    name: string,
+    id:      number,
+    name:    string,
     content: string
 };
 
 export interface PerpectInfo {
-    id: number,
-    name: string,
+    id:        number,
+    name:      string,
     select_id: number
+};
+
+export interface RecentUserInfo {
+    name:        string,
+    perpect:     Array<number>,
+    ranking:     number,
+    score:       number,
+    seat:        number,
+    star:        number,
+    uma:         number
+};
+
+export interface RecentInfo {
+    index:       number,
+    users:       Array<RecentUserInfo>,
+    deposit:     number,
+    update_time: Date
 };
