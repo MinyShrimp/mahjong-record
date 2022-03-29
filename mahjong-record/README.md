@@ -1,7 +1,4 @@
 
-
-# 가계부
-
 ## 설치
 * yarn add react react-dom typescript @types/react @types/react-dom
 * yarn add react-bootstrap bootstrap@5.1.3
