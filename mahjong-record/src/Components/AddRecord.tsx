@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 
-import SupportHolder from "./SupportHolder";
+//import SupportHolder from "./SupportHolder";
 import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
-import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
+//import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
+import { PerpectInfo, Info } from "../ToyBox/Interfaces";
+import { goServer } from "../ToyBox/Functions";
 
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
-    //const [supportID, supportIDChange] = useState<number>(0);
-    const [supportInfos, supportInfosChange] = useState<SupportInfo[]>([]);
+    //const [supportID, setSupportID] = useState<number>(0);
+    //const [supportInfos, setSupportInfos] = useState<SupportInfo[]>([]);
 
-    const [perpectID, perpectIDChange] = useState<number>(0);
-    const [perpectInfos, perpectInfosChange] = useState<PerpectInfo[]>([]);
-
-    const [deposit, depositChange] = useState<string>("");
+    const [perpectID, setPerpectID] = useState<number>(0);
+    const [perpectInfos, setPerpectInfos] = useState<PerpectInfo[]>([]);
 
     const normal_infos = [
         { seat: 0, name: "", score: "", star: "", perpect: "" },
@@ -23,18 +23,35 @@ const AddRecord = (props: any) => {
         { seat: 2, name: "", score: "", star: "", perpect: "" },
         { seat: 3, name: "", score: "", star: "", perpect: "" },
     ];
-    const [infos, infosChange] = useState<Info[]>(normal_infos);
 
-    const [isShowWarning, isShowWarningChange] = useState<boolean>(false);
-    const [warningReason, warningReasonChange] = useState<String>("");
+    const [isShowWarning, setIsShowWarning] = useState<boolean>(false);
+    const [warningReason, setWarningReason] = useState<string>("");
+
+    const [infos, setInfos]     = useState<Info[]>(normal_infos);
+    const [deposit, setDeposit] = useState<string>("");
+    const [names, setNames]     = useState<Array<string>>([]);
 
     const init_data = () => {
-        infosChange(normal_infos);
-        perpectInfosChange([]);
-        supportInfosChange([]);
-        isShowWarningChange(false);
-        warningReasonChange("");
-        depositChange("");
+        //setSupportInfos([]);
+        setInfos(normal_infos);
+        setPerpectInfos([]);
+        setIsShowWarning(false);
+        setWarningReason("");
+        setDeposit("");
+        get_names();
+    }
+
+    const get_names = async () => {
+        try {
+            const rows: any = await goServer( "/api/names", "GET", Config.headers );
+            if(rows.result !== 99) {
+                setNames(rows.map((row: any) => row.Name));
+            } else {
+                console.log('error')
+            }
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     const make_post_data = () => {
@@ -43,32 +60,23 @@ const AddRecord = (props: any) => {
             var _index = _tmp.findIndex((item) => item.name === value.name );
             if( _index !== -1 ) { _tmp[_index].perpect += value.select_id + "|"; }
         })
-        infosChange(_tmp);
+        setInfos(_tmp);
     }
 
     const post_data = async () => {
         make_post_data();
 
-        var res: Response = await fetch(
-            Config.serverIP + "/api/record",
-            {
-                method: "POST",
-                headers: Config.headers,
-                body: JSON.stringify([...infos, deposit]),
-            }
-        );
-
-        if( res.ok ) {
-            let data = await res.json();
-            const code: number = data.result;
+        try {
+            const rows: any = await goServer( "/api/records", "POST", Config.headers, JSON.stringify([...infos, deposit]) );
+            const code: number = rows.result;
             if( code !== 0 ) {
-                isShowWarningChange(true);
-                warningReasonChange(ErrorCode[code]);
+                setIsShowWarning(true);
+                setWarningReason(ErrorCode[code]);
             } else {
                 props.onHide();
             }
-        } else {
-            console.error(res);
+        } catch(e) {
+            console.log(e);
         }
     }
 
@@ -94,7 +102,7 @@ const AddRecord = (props: any) => {
                                             onChange={(e) => {
                                                 var _tmp = [...infos];
                                                 _tmp[index].name = e.target.value;
-                                                infosChange(_tmp);
+                                                setInfos(_tmp);
                                             }}
                                             value={value.name}
                                             autoComplete="on"
@@ -103,7 +111,11 @@ const AddRecord = (props: any) => {
 
                                         <datalist id="names">
                                             {
-                                                //TODO
+                                                names.map((value, index) => {
+                                                    return (
+                                                        <option value={value} key={index} />
+                                                    );
+                                                })
                                             }
                                         </datalist>
                                     </Col>
@@ -113,7 +125,7 @@ const AddRecord = (props: any) => {
                                             onChange={(e) => {
                                                 var _tmp = [...infos];
                                                 _tmp[index].score = e.target.value;
-                                                infosChange(_tmp);
+                                                setInfos(_tmp);
                                             }}
                                             value={value.score}
                                             type="number"
@@ -125,7 +137,7 @@ const AddRecord = (props: any) => {
                                             onChange={(e) => {
                                                 var _tmp = [...infos];
                                                 _tmp[index].star = e.target.value;
-                                                infosChange(_tmp);
+                                                setInfos(_tmp);
                                             }}
                                             value={value.star}
                                             type="number"
@@ -137,15 +149,17 @@ const AddRecord = (props: any) => {
                         })
                     }
                     
-                    <SupportHolder 
-                        supportInfos={supportInfos}
-                        supportInfosChange={supportInfosChange}
-                    />
+                    {
+                        // <SupportHolder 
+                        //     supportInfos={supportInfos}
+                        //     setSupportInfos={setSupportInfos}
+                        // />
+                    }
 
                     <PerpectHolder 
                         infos={infos}
                         perpectInfos={perpectInfos}
-                        perpectInfosChange={perpectInfosChange}
+                        setPerpectInfos={setPerpectInfos}
                     />
 
                     <Row className="mb-3">
@@ -153,7 +167,7 @@ const AddRecord = (props: any) => {
                             <Form.Control 
                                 placeholder="공탁금" 
                                 onChange={(e) => {
-                                    depositChange(e.target.value);
+                                    setDeposit(e.target.value);
                                 }}
                                 type="number"
                                 value={deposit}
@@ -165,8 +179,8 @@ const AddRecord = (props: any) => {
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {
-                                    supportInfosChange( [...supportInfos, { id: supportID, name: "", content: "" }] );
-                                    supportIDChange(supportID + 1);
+                                    setSupportInfos( [...supportInfos, { id: supportID, name: "", content: "" }] );
+                                    setSupportID(supportID + 1);
                                 }}
                             > 후원 추가 </Button>
                         </Col>
@@ -175,10 +189,10 @@ const AddRecord = (props: any) => {
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {
-                                    perpectInfosChange( [...perpectInfos, { id: perpectID, name: "", select_id: -1 }] );
-                                    perpectIDChange(perpectID + 1);
+                                    setPerpectInfos( [...perpectInfos, { id: perpectID, name: "", select_id: -1 }] );
+                                    setPerpectID(perpectID + 1);
                                 }}
-                            > 역만 추가 </Button>
+                            > 역만 </Button>
                         </Col>
                     </Row>
                     {

@@ -1,5 +1,7 @@
-
+import express, { Request, Response } from "express";
 import { Info, Test, ErrorCode } from "./Interfaces";
+const jwt = require("jsonwebtoken");
+import Config from "./Config";
 
 export const isCleanData = (datas: Array<Info>, deposit: string) : Test => {
     
@@ -57,3 +59,73 @@ export const isCleanData = (datas: Array<Info>, deposit: string) : Test => {
         return { result: true, contents: ErrorCode["SUCCESS"] };
     }
 }
+
+export const getUmas = ( data: Array<Info> ) => {
+    const scores = data.map((value: Info) => parseInt(value.score))
+    const scores_count = scores.reduce((accu: any, curr: any) => { 
+        accu[curr] = (accu[curr] || 0)+1; 
+        return accu;
+    }, {});
+    const result = scores.map(s => scores_count[s]).toString();
+
+    switch( result ) {
+        case '4,4,4,4':
+            return [0, 0, 0, 0];
+        case '3,3,3,1':
+            return [10, 10, 10, -30];
+        case '2,2,2,2':
+            return [15, 15, -15, -15];
+        case '2,2,1,1':
+            return [15, 15, -10, -20];
+        case '1,2,2,1':
+            return [30, 0, 0, -30];
+        case '1,1,2,2':
+            return [20, 10, -15, -15];
+    }
+    return [20, 10, -10, -20];
+}
+
+// access token을 secret key 기반으로 생성
+export const generateAccessToken = (id: string) => {
+    return jwt.sign({ id }, Config.JWT.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+    });
+};
+
+// refersh token을 secret key  기반으로 생성
+export const generateRefreshToken = (id: string) => {
+    return jwt.sign({ id }, Config.JWT.REFRESH_TOKEN_SECRET, {
+        expiresIn: "180 days",
+    });
+};
+
+// // access token의 유효성 검사
+export const authenticateAccessToken = (req: Request, res: Response, next: any) => {
+    let authHeader = req.headers["authorization"];
+
+    if (!authHeader) {
+        return res.status(200).json({
+            code: 400,
+            message: '유효하지 않은 토큰입니다.'
+        });
+    }
+
+    try {
+        req.body.decoded = jwt.verify(authHeader, Config.JWT.ACCESS_TOKEN_SECRET);
+        next();
+    } catch(e: any) {
+        if (e.name === 'TokenExpiredError') {
+            return res.status(200).json({
+                code: 419,
+                message: '토큰이 만료되었습니다.'
+            });
+        }
+        
+        if (e.name === 'JsonWebTokenError') {
+            return res.status(200).json({
+                code: 401,
+                message: '유효하지 않은 토큰입니다.'
+            });
+        }
+    }
+};

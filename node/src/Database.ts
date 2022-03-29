@@ -21,14 +21,14 @@ export default class Database {
     }
 
     public select(callback: Function) {
-        let sql = 'select * from IndexRecord;';
+        const sql = 'select * from IndexRecord;';
         this.connection.query(sql, callback);
     }
 
     private _promise = async (sql: string, str: string) => {
         return new Promise((resolve, reject) => {
             this.connection.query(sql, (err, res) => {
-                if(err) { reject(Error(str)); }
+                if(err) { console.log(err); reject(Error(str)); }
                 else { resolve(res); }
             });
         });
@@ -38,7 +38,7 @@ export default class Database {
     // UserRecord
     //////////////////////////////////////////////////
     public findUserByUserRecord(name: string) {
-        let sql = `
+        const sql = `
             SELECT ID, Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord 
             WHERE Name = "${name}";
@@ -47,7 +47,7 @@ export default class Database {
     }
 
     public updateUserByUserRecord(id: string, data: string) {
-        let sql = `
+        const sql = `
             UPDATE UserRecord
             SET ${data}
             WHERE ID = ${id};
@@ -56,7 +56,7 @@ export default class Database {
     }
 
     public insertUserByUserRecord(data: string) {
-        let sql = `
+        const sql = `
             INSERT INTO 
             UserRecord(Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4) 
             VALUES(${data});
@@ -65,7 +65,7 @@ export default class Database {
     }
 
     public selectAllByUserRecord() {
-        let sql = `
+        const sql = `
             SELECT Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord
             ORDER BY Uma DESC;
@@ -73,16 +73,25 @@ export default class Database {
         return this._promise(sql, "select user error");
     }
 
+    public selectAllNameByUserRecord() {
+        const sql = `
+            SELECT Name 
+            FROM UserRecord
+            ORDER BY UpdateTime DESC, Name;
+        `;
+        return this._promise(sql, "select user name error");
+    }
+
     //////////////////////////////////////////////////
     // IndexRecord
     //////////////////////////////////////////////////
     public getRecentIndexByIndexRecord() {
-        let sql = 'SELECT MAX(RecordIndex) AS maxindex FROM IndexRecord;';
+        const sql = 'SELECT MAX(RecordIndex) AS maxindex FROM IndexRecord;';
         return this._promise(sql, "select index error");
     }
 
     public insertIndexRecord(data: string) {
-        let sql = `
+        const sql = `
             INSERT INTO 
             IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
             ${data};
@@ -90,8 +99,12 @@ export default class Database {
         return this._promise(sql, "insert index error");
     }
 
-    public getRecentAllByIndexRecord() {
-        let sql = `
+    public getRecentAllByIndexRecord(page: number) {
+        const range = 10;
+        const start = (page - 1) * range + 1;
+        const end   = (page)     * range;
+
+        const sql = `
             SELECT 
                 b.RecordIndex, a.Names, a.Rankings, a.Scores, 
                 a.Seats, a.Perpects, a.Umas, a.Stars, 
@@ -104,6 +117,7 @@ export default class Database {
                     GROUP_CONCAT(Seat) AS Seats, GROUP_CONCAT(Perpect) AS Perpects,
                     GROUP_CONCAT(Uma) AS Umas, GROUP_CONCAT(Star) AS Stars
                 FROM IndexRecord
+                WHERE RecordIndex >= ${start} AND RecordIndex <= ${end}
                 GROUP BY RecordIndex
             ) AS a
             ON a.RecordIndex=b.RecordIndex
@@ -111,5 +125,17 @@ export default class Database {
             ORDER BY RecordIndex DESC;
         `;
         return this._promise(sql, "select all index error");
+    }
+
+    //////////////////////////////////////////////////
+    // Autho
+    //////////////////////////////////////////////////
+    public selectByAutho(name: string) {
+        const sql = `
+            SELECT * 
+            FROM Autho
+            WHERE ID="${name}";
+        `;
+        return this._promise(sql, "select autho error");
     }
 }

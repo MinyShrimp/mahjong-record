@@ -10,7 +10,7 @@
 ## 빌드
 * docker-compose up -d
 
-## 구조
+## 유저 기반 Database
 | Name       | Type        | 설명                |
 | ---------- | ----------- | ------------------- |
 | ID         | INT         | -                   |
@@ -44,6 +44,7 @@ CREATE TABLE UserRecord (
 ```
 ```
 DROP TABLE UserRecord;
+DELETE FROM UserRecord;
 ALTER TABLE UserRecord AUTO_INCREMENT=1;
 SELECT ID, Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 FROM UserRecord;
 
@@ -56,7 +57,7 @@ UPDATE UserRecord
     WHERE ID = id;
 ```
 
-## 구조
+## 인덱스 기반 Database
 | Name        | Type        | 설명                        |
 | ----------- | ----------- | --------------------------- |
 | ID          | INT         | -                           |
@@ -76,19 +77,50 @@ CREATE TABLE IndexRecord (
     ID            INT AUTO_INCREMENT PRIMARY KEY,
     RecordIndex   INT NOT NULL,
     Name          VARCHAR(30) NOT NULL,
-    Score         INT NOT NULL,
-    Ranking       TINYINT NOT NULL,
-    Seat          TINYINT NOT NULL,
-    Uma           TINYINT NOT NULL,
-    Star          TINYINT NOT NULL,
+    Score         INT DEFAULT 0,
+    Ranking       TINYINT DEFAULT 0,
+    Seat          TINYINT DEFAULT 0,
+    Uma           TINYINT DEFAULT 0,
+    Star          TINYINT DEFAULT 0,
     Perpect       VARCHAR(30) NOT NULL,
+    Deposit       INT DEFAULT 0,
     UpdateTime    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET UTF8;
 ```
 ```
 DROP TABLE IndexRecord;
+DELETE FROM IndexRecord;
 ALTER TABLE IndexRecord AUTO_INCREMENT=1;
 INSERT INTO 
     IndexRecord(RecordIndex, Name, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
     VALUES(0, "", 0, 0, 0, 0, 0, "", 0);
+```
+
+## 관리자 ID Database
+| Name | Type         | 설명 |
+| ---- | ------------ | ---- |
+| ID   | VARCHAR(30)  | -    |
+| PWD  | VARCHAR(150) | -    |
+| SALT | VARCHAR(100) | -    |
+
+```
+CREATE TABLE Autho (
+    ID    VARCHAR(30)  NOT NULL,
+    PWD   VARCHAR(150) NOT NULL,
+    SALT  VARCHAR(100) NOT NULL
+) DEFAULT CHARACTER SET UTF8;
+
+```
+
+## 관리자 ID 접속시간 LOG
+| Name | Type         | 설명 |
+| ---- | ------------ | ---- |
+| ID   | VARCHAR(30)  | -    |
+| PWD  | VARCHAR(100) | -    |
+
+```
+CREATE TABLE AuthoLog (
+    ID    VARCHAR(30) NOT NULL,
+    PWD   VARCHAR(30) NOT NULL,
+) DEFAULT CHARACTER SET UTF8;
 ```

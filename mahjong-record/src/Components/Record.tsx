@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Navbar, Container, Nav, Button, Table, Form } from "react-bootstrap";
+import { Navbar, Container, Button, Table } from "react-bootstrap";
 
 import AddRecord from './AddRecord';
 import { RankingInfo } from "../ToyBox/Interfaces";
-import { roundToTwo, numberWithCommas } from "../ToyBox/Functions";
+import { roundToTwo, numberWithCommas, goServer } from "../ToyBox/Functions";
 import Config from "../ToyBox/Config";
 
 const Record = () => {
@@ -11,19 +11,13 @@ const Record = () => {
     const [userDatas, setUserDatas] = useState<Array<RankingInfo>>([]);
 
     const get_users = async () => {
-        var res: Response = await fetch(
-            Config.serverIP + "/api/users",
-            {
-                method: "GET",
-                headers: Config.headers
+        try{
+            const datas: any = await goServer("/api/users", "GET", Config.headers);
+            if(datas.result !== 99) {
+                setUserDatas(datas);
             }
-        );
-
-        if( res.ok ) {
-            let datas = await res.json();
-            setUserDatas(datas);
-        } else {
-            console.error(res);
+        } catch(e) {
+            console.log(e);
         }
     }
 
@@ -36,13 +30,15 @@ const Record = () => {
             <Navbar bg="light" fixed="top">
                 <Container>
                     <Navbar.Brand>순위</Navbar.Brand>
-                    <Nav className="me-auto">
-                        <Form.Check label={`20국 이상`} className="nav-item" id="check" />
-                    </Nav>
-
-                    <Nav className="justify-content-end">
-                        <Nav.Link href="#">로그인</Nav.Link>
-                    </Nav>
+                    
+                    {
+                        // <Nav className="me-auto">
+                        //     <Form.Check label={`20국 이상`} className="nav-item" id="check" />
+                        // </Nav>
+                        //<Nav className="justify-content-end">
+                        //    <Nav.Link href="#">로그인</Nav.Link>
+                        //</Nav>
+                    }
                 </Container>
             </Navbar>
 
@@ -71,6 +67,7 @@ const Record = () => {
                     </thead>
                     <tbody>
                         {
+                            userDatas.length !== 0 ? 
                             userDatas.map((user: RankingInfo, index: number) => {
                                 return (
                                     <tr key={index}>
@@ -88,12 +85,12 @@ const Record = () => {
                                         <td>{ user.Rank_2 }</td>
                                         <td>{ user.Rank_3 }</td>
                                         <td>{ user.Rank_4 }</td>
-                                        <td>{ roundToTwo( user.Rank_1 / user.Count ) * 100 }</td>
-                                        <td>{ roundToTwo( ( user.Rank_1 + user.Rank_2 ) / user.Count ) * 100 }</td>
-                                        <td>{ roundToTwo( user.Rank_4 / user.Count ) * 100 }</td>
+                                        <td>{ roundToTwo( user.Rank_1 / user.Count ) }</td>
+                                        <td>{ roundToTwo( ( user.Rank_1 + user.Rank_2 ) / user.Count ) }</td>
+                                        <td>{ roundToTwo( user.Rank_4 / user.Count ) }</td>
                                     </tr>
                                 );
-                            })
+                            }): null
                         }
                     </tbody>
                 </Table>

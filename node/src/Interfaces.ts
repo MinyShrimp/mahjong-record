@@ -24,5 +24,8 @@ export const ErrorCode = {
     "MINUS_DEPOSIT": 8,
     "MINUS_STAR": 9,
     "DUPLICATE_NAME": 10,
+    "LOGIN_FAILED_NOT_FOUND_ID": 11,
+    "LOGIN_FAILED_NOT_MATCH_PWD": 12,
+    "LOGIN_SUCCESS": 13,
     "UNDEFIND_ERROR": 99
 };

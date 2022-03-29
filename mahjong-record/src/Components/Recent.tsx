@@ -1,70 +1,69 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Navbar, Container, Nav, Table, Button } from "react-bootstrap";
 
 import Config from "../ToyBox/Config";
 import { RecentUserInfo, RecentInfo } from '../ToyBox/Interfaces';
 import { QuickSort } from '../ToyBox/QuickSort';
-import { numberWithCommas, toStringByFormatting } from "../ToyBox/Functions";
+import { goServer, numberWithCommas, toStringByFormatting } from "../ToyBox/Functions";
 import { Perpects } from "../ToyBox/Code";
 
 import AddRecord from './AddRecord';
 
-const Recent = (props: any) => {
+const Recent = () => {
     const titles = ['東', '南', '西', '北'];
-    const [modalShow, setModalShow] = useState(false);
+    const [ modalShow, setModalShow ] = useState(false);
     const [ datas, setDatas ] = useState<Array<RecentInfo>>([]);
 
+    const { id } = useParams();
+
     const get_recents = async () => {
-        const res = await fetch(
-            Config.serverIP + "/api/records",
-            {
-                method: "GET",
-                headers: Config.headers
-            }
-        );
-
-        if( res.ok ) {
-            const rows = await res.json();
-            let result: Array<RecentInfo> = [];
-            rows.forEach((value: any) => {
-                const index      = value.RecordIndex;
-                const deposit    = value.Deposit;
-                const updateTime = value.UpdateTime;
-
-                const names      = value.Names.split(',');
-                const perpects   = value.Perpects.split(',');
-                const rankings   = value.Rankings.split(',');
-                const scores     = value.Scores.split(',');
-                const seats      = value.Seats.split(',');
-                const stars      = value.Stars.split(',');
-                const umas       = value.Umas.split(',');
-
-                var _tmp: Array<RecentUserInfo> = [];
-                for(var i = 0; i < 4; i++) {
-                    var _perpects = perpects[i].split('|'); _perpects.pop();
-
-                    _tmp.push({
-                        name:        names[i],
-                        perpect:     _perpects,
-                        ranking:     parseInt(rankings[i]),
-                        score:       parseInt(scores[i]),
-                        seat:        parseInt(seats[i]),
-                        star:        parseInt(stars[i]),
-                        uma:         parseInt(umas[i])
+        try {
+            const rows: any = await goServer(`/api/records/${id}`, "GET", Config.headers);
+            if( rows.result !== 99 ) {
+                let result: Array<RecentInfo> = [];
+                rows.forEach((value: any) => {
+                    const index      = value.RecordIndex;
+                    const deposit    = value.Deposit;
+                    const updateTime = value.UpdateTime;
+    
+                    const names      = value.Names.split(',');
+                    const perpects   = value.Perpects.split(',');
+                    const rankings   = value.Rankings.split(',');
+                    const scores     = value.Scores.split(',');
+                    const seats      = value.Seats.split(',');
+                    const stars      = value.Stars.split(',');
+                    const umas       = value.Umas.split(',');
+    
+                    var _tmp: Array<RecentUserInfo> = [];
+                    for(var i = 0; i < 4; i++) {
+                        var _perpects = perpects[i].split('|'); _perpects.pop();
+    
+                        _tmp.push({
+                            name:        names[i],
+                            perpect:     _perpects,
+                            ranking:     parseInt(rankings[i]),
+                            score:       parseInt(scores[i]),
+                            seat:        parseInt(seats[i]),
+                            star:        parseInt(stars[i]),
+                            uma:         parseInt(umas[i])
+                        });
+                    }
+                    _tmp = QuickSort(_tmp);
+                    result.push({
+                        index:       index,
+                        users:       _tmp,
+                        deposit:     deposit,
+                        update_time: new Date(updateTime)
                     });
-                }
-                _tmp = QuickSort(_tmp);
-                result.push({
-                    index:       index,
-                    users:       _tmp,
-                    deposit:     deposit,
-                    update_time: new Date(updateTime)
-                });
-            })
-            console.log(result)
-            setDatas(result);
-        } else {
-            console.error(res);
+                })
+                setDatas(result);
+            } else {
+                setDatas([]);
+            }
+        } catch(e) {
+            setDatas([]);
+            console.log(e);
         }
     }
 
@@ -80,9 +79,11 @@ const Recent = (props: any) => {
                     <Nav className="me-auto">
                     </Nav>
 
-                    <Nav className="justify-content-end">
-                        <Nav.Link href="#">로그인</Nav.Link>
-                    </Nav>
+                    {
+                        //<Nav className="justify-content-end">
+                        //    <Nav.Link href="#">로그인</Nav.Link>
+                        //</Nav>
+                    }
                 </Container>
             </Navbar>
 
@@ -133,7 +134,7 @@ const Recent = (props: any) => {
                                     }
                                     {
                                         value.users.map((user: RecentUserInfo, index: number) => {
-                                            if( user.perpect.length == 0 ) {
+                                            if( user.perpect.length === 0 ) {
                                                 return null;
                                             }
                                             return user.perpect.map((value: number, index: number) => {

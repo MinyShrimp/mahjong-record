@@ -1,3 +1,4 @@
+import Config from '../ToyBox/Config';
 
 export const roundToTwo = (num: number) => {
     return +(Math.round(Number(num + "e+2"))  + "e-2");
@@ -19,4 +20,25 @@ export function toStringByFormatting(source: Date) {
     const minute = leftPad(source.getMinutes());
 
     return `${[year, month, day].join('-')} ${[hour, minute].join(':')}`; 
+}
+
+export const goServer = async ( api: string, method: string, headers: any, body?: any ) => {
+    try{
+        const res: Response = await fetch( Config.serverIP + api, {
+            method: method,
+            headers: headers,
+            body: body
+        });
+        
+        return new Promise(async (resolve, reject) => {
+            if(res.ok) {
+                const rows = await res.json();
+                resolve(rows);
+            } else {
+                reject(res);
+            }
+        });
+    } catch(e) {
+        console.log(e);
+    }
 }

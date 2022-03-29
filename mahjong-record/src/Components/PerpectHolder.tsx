@@ -16,7 +16,7 @@ const PerpectItem = (props: any) => {
                         let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp[index].name = e.target.value; _tmp[index].select_id = -1; }
-                        props.perpectInfosChange(_tmp);
+                        props.setPerpectInfos(_tmp);
                     }}
                     value={props.value.name}
                 >
@@ -31,7 +31,7 @@ const PerpectItem = (props: any) => {
                         let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp[index].select_id = e.target.value; }
-                        props.perpectInfosChange(_tmp);
+                        props.setPerpectInfos(_tmp);
                     }}
                     value={ props.value.select_id }
                 >
@@ -48,7 +48,7 @@ const PerpectItem = (props: any) => {
                         let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
                         if(index !== -1) { _tmp.splice(index, 1); }
-                        props.perpectInfosChange(_tmp);
+                        props.setPerpectInfos(_tmp);
                     }}
                 >-</Button>
             </Col>
@@ -66,7 +66,7 @@ const PerpectHolder = (props: any) => {
                         value={value}
                         infos={props.infos}
                         perpectInfos={props.perpectInfos}
-                        perpectInfosChange={props.perpectInfosChange}
+                        setPerpectInfos={props.setPerpectInfos}
                     />
                 })
             }
