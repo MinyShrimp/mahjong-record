@@ -1,21 +1,22 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import morgan from "morgan";
 const jwt = require("jsonwebtoken");
 import * as CryptoJS from "crypto-js";
+import {stream} from "./morganMiddleware";
 
 import { Info, Test, ErrorCode } from "./Interfaces";
 import Config                    from "./Config";
 import Database                  from "./Database";
-import { QuickSort }             from "./Quicksort";
-import { isCleanData, getUmas, generateAccessToken, generateRefreshToken, authenticateAccessToken, deleteRecord, addRecord }  from "./Functions";
+import { isCleanData, generateAccessToken, generateRefreshToken, authenticateAccessToken, deleteRecord, addRecord } from "./Functions";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(morgan('combined', {stream}));
 
 app.get('/helloworld/:id', (req: Request, res: Response) => {
-    console.log(req);
     const salt = CryptoJS.lib.WordArray.random(128/8).toString();
     const id  = req.params.id;
     const pwd = CryptoJS.SHA512( salt + CryptoJS.SHA512(id).toString() ).toString();

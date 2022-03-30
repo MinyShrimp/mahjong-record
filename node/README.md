@@ -6,6 +6,7 @@
 * yarn add cors @types/cors body-parser @types/body-parser
 * yarn add crypto-js @types/crypto-js
 * yarn add jsonwebtoken
+* yarn add morgan @types/morgan
 
 ## 도커
 * docker pull node:16
