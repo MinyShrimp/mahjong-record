@@ -81,7 +81,9 @@ const FixRecord = (props: any) => {
         }
     }
 
-    useEffect(() => { init_data(); }, [props.show]);
+    useEffect(() => { 
+        if(props.show) { init_data(); }
+    }, [ props.show ]);
     
     return (
         <Modal
