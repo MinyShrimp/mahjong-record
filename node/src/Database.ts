@@ -37,7 +37,7 @@ export default class Database {
     //////////////////////////////////////////////////
     // UserRecord
     //////////////////////////////////////////////////
-    public findUserByUserRecord(name: string) {
+    public selectUserByUserRecord(name: string) {
         const sql = `
             SELECT ID, Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord 
@@ -68,6 +68,7 @@ export default class Database {
         const sql = `
             SELECT Name, Uma, Score, MaxScore, Star, Count, Rank_1, Rank_2, Rank_3, Rank_4 
             FROM UserRecord
+            WHERE Count != 0
             ORDER BY Uma DESC;
         `;
         return this._promise(sql, "select user error");
@@ -77,6 +78,7 @@ export default class Database {
         const sql = `
             SELECT Name 
             FROM UserRecord
+            WHERE Count != 0
             ORDER BY UpdateTime DESC, Name;
         `;
         return this._promise(sql, "select user name error");
@@ -101,8 +103,7 @@ export default class Database {
 
     public getRecentAllByIndexRecord(page: number) {
         const range = 10;
-        const start = (page - 1) * range + 1;
-        const end   = (page)     * range;
+        const start = (page - 1) * range;
 
         const sql = `
             SELECT 
@@ -117,14 +118,30 @@ export default class Database {
                     GROUP_CONCAT(Seat) AS Seats, GROUP_CONCAT(Perpect) AS Perpects,
                     GROUP_CONCAT(Uma) AS Umas, GROUP_CONCAT(Star) AS Stars
                 FROM IndexRecord
-                WHERE RecordIndex >= ${start} AND RecordIndex <= ${end}
                 GROUP BY RecordIndex
             ) AS a
             ON a.RecordIndex=b.RecordIndex
             WHERE Ranking=1
-            ORDER BY RecordIndex DESC;
+            ORDER BY RecordIndex DESC
+            LIMIT ${range} OFFSET ${start};
         `;
         return this._promise(sql, "select all index error");
+    }
+
+    public selectIndexRecordByRecordIndex(index: number) {
+        const sql = `
+            SELECT * FROM IndexRecord
+            WHERE RecordIndex=${index};
+        `;
+        return this._promise(sql, "delete index error");
+    }
+
+    public deleteIndexRecordByRecordIndex(index: number) {
+        const sql = `
+            DELETE FROM IndexRecord
+            WHERE RecordIndex=${index};
+        `;
+        return this._promise(sql, "delete index error");
     }
 
     //////////////////////////////////////////////////

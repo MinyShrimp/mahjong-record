@@ -8,22 +8,19 @@ import { Info, Test, ErrorCode } from "./Interfaces";
 import Config                    from "./Config";
 import Database                  from "./Database";
 import { QuickSort }             from "./Quicksort";
-import { isCleanData, getUmas, generateAccessToken, generateRefreshToken, authenticateAccessToken }  from "./Functions";
+import { isCleanData, getUmas, generateAccessToken, generateRefreshToken, authenticateAccessToken, deleteRecord, addRecord }  from "./Functions";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/', (req: Request, res: Response) => {
-    let sql = 'select * from IndexRecord;';
-    Database.getInstance().select((err: any, rows: any) => {
-        if (err) {
-            res.send('Opps. Error happened\n');
-        } else {
-            res.send(rows);
-        }
-    });
-});
+app.get('/helloworld/:id', (req: Request, res: Response) => {
+    console.log(req);
+    const salt = CryptoJS.lib.WordArray.random(128/8).toString();
+    const id  = req.params.id;
+    const pwd = CryptoJS.SHA512( salt + CryptoJS.SHA512(id).toString() ).toString();
+    res.send(JSON.stringify({ salt: salt, pwd: pwd }));
+})
 
 //////////////////////////////////////////////////
 // /api
@@ -41,79 +38,15 @@ app.use('/api/:id', (req: Request, res: Response, next) => {
 //////////////////////////////////////////////////
 app.post('/api/records', async (req: Request, res: Response) => {
     try{
-        let body = req.body;
-        let data: Array<Info> = body.slice(0, 4);
-        let deposit = body.slice(4)[0];
-        deposit = deposit === '' ? "0" : deposit;
-    
+        let data: Array<Info> = req.body.users;
+        let deposit: number = req.body.deposit;
+
         let data_test: Test = isCleanData(data, deposit);
-        
-        if(data_test.result) {
-            data = QuickSort(data);
-            const plus_uma = getUmas(data);
 
-            data.forEach(async (value: Info, index: number) => {
-                const rows = await Database.getInstance().findUserByUserRecord(value.name);
-                let user_data = JSON.parse(JSON.stringify(rows))[0];
-
-                if(user_data === undefined) {
-                    let name        = value.name;
-                    let score       = parseInt(value.score);
-                    let rank        = [0, 0, 0, 0];
-                    rank[index]     = 1;
-                    let uma         = Math.round( score / 1000 ) + plus_uma[index];
-                    let star        = value.star === '' ? 0 : parseInt(value.star);
-                    
-                    let sql = `"${name}", ${uma}, ${score}, ${score}, ${star}, 1, ${rank.toString()}`;
-
-                    await Database.getInstance().insertUserByUserRecord(sql);
-                } else {
-                    let _score = parseInt(value.score);
-
-                    let id       = user_data.ID;
-                    let score    = parseInt(user_data.Score) + _score;
-                    let uma      = parseInt(user_data.Uma) + Math.round( _score / 1000 ) + plus_uma[index];
-                    let maxscore = Math.max( parseInt(user_data.MaxScore), _score );
-                    let now_star = value.star === '' ? 0 : parseInt(value.star);
-                    let star     = parseInt(user_data.Star) + now_star;
-                    let count    = parseInt(user_data.Count) + 1;
-                    let rank_1   = index === 0 ? parseInt(user_data.Rank_1) + 1 : parseInt(user_data.Rank_1);
-                    let rank_2   = index === 1 ? parseInt(user_data.Rank_2) + 1 : parseInt(user_data.Rank_2);
-                    let rank_3   = index === 2 ? parseInt(user_data.Rank_3) + 1 : parseInt(user_data.Rank_3);
-                    let rank_4   = index === 3 ? parseInt(user_data.Rank_4) + 1 : parseInt(user_data.Rank_4);
-
-                    let sql = `
-                        Uma=${uma}, Score=${score}, MaxScore=${maxscore}, Star=${star}, Count=${count},
-                        Rank_1=${rank_1}, Rank_2=${rank_2}, Rank_3=${rank_3}, Rank_4=${rank_4}
-                    `;
-
-                    await Database.getInstance().updateUserByUserRecord(id, sql);
-                }
-            });
-            
-            const rows = await Database.getInstance().getRecentIndexByIndexRecord();
-            let lastIndex = JSON.parse(JSON.stringify(rows))[0].maxindex;
-            let recordIndex = lastIndex !== null ? lastIndex + 1 : 1;
-            
-            let sql_data = "VALUES ";
-            data.forEach((value: Info, index: number) => {
-                let name        = value.name;
-                let score       = parseInt(value.score);
-                let ranking     = index + 1;
-                let seat        = value.seat;
-                let uma         = Math.round( score / 1000 ) + plus_uma[index];
-                let star        = value.star === '' ? 0 : parseInt(value.star);
-                let perpect     = value.perpect;
-            
-                sql_data += 
-                    `('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}'` +
-                    (index === 0 ? `, ${deposit})`: `, 0)`);
-                sql_data += index === 3 ? ';' : ',';
-            });
-            
-            await Database.getInstance().insertIndexRecord(sql_data);
+        if (data_test.result) {
+            await addRecord(req.body);
         }
-    
+
         res.send(JSON.stringify({result: data_test.contents}));
     } catch(e) {
         console.log(e);
@@ -131,8 +64,35 @@ app.get('/api/records/:id', async (req: Request, res: Response) => {
     }
 });
 
-app.delete('/api/records', async (req: Request, res: Response) => {
+app.delete('/api/records', authenticateAccessToken, async (req: Request, res: Response) => {
+    try {
+        deleteRecord(req.body);
+        res.send(JSON.stringify({result: ErrorCode["DELETE_SUCCESS"]}));
+    } catch(e) {
+        console.log(e);
+        res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
+    }
+});
 
+app.put('/api/records', authenticateAccessToken, async (req: Request, res: Response) => {
+    try {
+        let data: Array<Info> = req.body.users;
+        let deposit: number = req.body.deposit;
+
+        let data_test: Test = isCleanData(data, deposit);
+
+        if (data_test.result) {
+            const fl = await deleteRecord(req.body);
+            if(fl) {
+                await addRecord(req.body);
+            }
+        }
+
+        res.send(JSON.stringify({result: data_test.contents}));
+    } catch(e) {
+        console.log(e);
+        res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
+    }
 });
 
 //////////////////////////////////////////////////

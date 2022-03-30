@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Row, Col } from "react-bootstrap";
-import { PerpectInfo, Info } from "../ToyBox/Interfaces";
+import { PerpectInfo } from "../ToyBox/Interfaces";
 import { Perpects } from "../ToyBox/Code";
 
 const PerpectItem = (props: any) => {
@@ -21,7 +21,7 @@ const PerpectItem = (props: any) => {
                     value={props.value.name}
                 >
                     {
-                        props.infos.map((_tmp: Info, index: number) => _tmp.name !== '' && <option value={_tmp.name} key={index}> {_tmp.name} </option>)
+                        props.names.map((_tmp: string, index: number) => _tmp !== '' && <option value={_tmp} key={index}> {_tmp} </option>)
                     }
                 </Form.Select>
             </Col>
@@ -64,7 +64,7 @@ const PerpectHolder = (props: any) => {
                     return <PerpectItem
                         key={index}
                         value={value}
-                        infos={props.infos}
+                        names={props.names}
                         perpectInfos={props.perpectInfos}
                         setPerpectInfos={props.setPerpectInfos}
                     />

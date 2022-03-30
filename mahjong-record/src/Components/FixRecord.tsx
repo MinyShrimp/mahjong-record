@@ -1,44 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 
-//import SupportHolder from "./SupportHolder";
 import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
-//import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
 import { PerpectInfo, Info, RecentInfo } from "../ToyBox/Interfaces";
 import { goServer } from "../ToyBox/Functions";
 
-const AddRecord = (props: any) => {
+const FixRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
-    //const [supportID, setSupportID] = useState<number>(0);
-    //const [supportInfos, setSupportInfos] = useState<SupportInfo[]>([]);
 
     const [perpectID, setPerpectID] = useState<number>(0);
     const [perpectInfos, setPerpectInfos] = useState<PerpectInfo[]>([]);
 
-    const normal_infos = [
-        { seat: 0, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 1, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 2, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 3, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-    ];
-
     const [isShowWarning, setIsShowWarning] = useState<boolean>(false);
     const [warningReason, setWarningReason] = useState<string>("");
 
-    const [infos, setInfos]     = useState<Info[]>(normal_infos);
-    const [deposit, setDeposit] = useState<number>(0);
-    const [names, setNames]     = useState<Array<string>>([]);
+    const [names, setNames] = useState([]);
 
     const init_data = () => {
-        //setSupportInfos([]);
-        setInfos(normal_infos);
-        setPerpectInfos([]);
         setIsShowWarning(false);
         setWarningReason("");
-        setDeposit(0);
         get_names();
+
+        var _tmp: Array<PerpectInfo> = [], _count: number = 0;
+        props.info.users.forEach((user: Info) => {
+            user.perpect.forEach((p: number) => {
+                _tmp.push({
+                    id: _count++, name: user.name, select_id: p
+                });
+            })
+        });
+        setPerpectInfos(_tmp);
+        setPerpectID(_count);
     }
 
     const get_names = async () => {
@@ -55,25 +49,27 @@ const AddRecord = (props: any) => {
     }
 
     const make_post_data = (): RecentInfo => {
-        var _tmp = [...infos];
+        var users = [...props.info.users];
+        users.forEach((user: any) => { user.perpect = [] });
+
         perpectInfos.forEach((value) => {
-            var _index = _tmp.findIndex((item) => item.name === value.name );
-            if( _index !== -1 ) { _tmp[_index].perpect.push( value.select_id ); }
+            var _index = users.findIndex((item) => item.name === value.name );
+            if( _index !== -1 ) { users[_index].perpect.push( value.select_id ); }
         });
 
         return {
-            index: 0, users: _tmp, deposit: deposit, update_time: new Date()
+            index: props.info.index, users: users, deposit: props.info.deposit, update_time: new Date()
         };
     }
 
     const post_data = async () => {
-        make_post_data();
-
         try {
-            const rows: any = await goServer( "/api/records", "POST", Config.headers, JSON.stringify(make_post_data()) );
+            var headers = JSON.parse(JSON.stringify(Config.headers));
+            headers["authorization"] = sessionStorage.getItem('a_token');
+            const rows: any = await goServer( "/api/records", "PUT", headers, JSON.stringify(make_post_data()) );
             const code: number = rows.result;
+            console.log(rows);
             if( code !== 0 ) {
-                console.log(rows);
                 setIsShowWarning(true);
                 setWarningReason(ErrorCode[code]);
             } else {
@@ -98,7 +94,7 @@ const AddRecord = (props: any) => {
             <Modal.Body>
                 <Form>
                     {
-                        infos.map((value, index) => {
+                        props.info.users.map((value: Info, index: number) => {
                             return (
                                 <Row className="mb-3" key={index}>
                                     <Col xs={1} className="form-title"> {titles[index]} </Col>
@@ -106,9 +102,9 @@ const AddRecord = (props: any) => {
                                         <Form.Control 
                                             placeholder="이름" 
                                             onChange={(e) => {
-                                                var _tmp = [...infos];
-                                                _tmp[index].name = e.target.value;
-                                                setInfos(_tmp);
+                                                var _tmp: RecentInfo = JSON.parse(JSON.stringify(props.info));
+                                                _tmp.users[index].name = e.target.value;
+                                                props.setInfo(_tmp);
                                             }}
                                             value={value.name}
                                             autoComplete="on"
@@ -129,9 +125,9 @@ const AddRecord = (props: any) => {
                                         <Form.Control 
                                             placeholder="점수" 
                                             onChange={(e) => {
-                                                var _tmp = [...infos];
-                                                _tmp[index].score = e.target.value === '' ? 0 : parseInt(e.target.value);
-                                                setInfos(_tmp);
+                                                var _tmp: RecentInfo = JSON.parse(JSON.stringify(props.info));
+                                                _tmp.users[index].score = e.target.value === '' ? 0 : parseInt(e.target.value);
+                                                props.setInfo(_tmp);
                                             }}
                                             value={value.score === 0 ? '' : value.score}
                                             type="number"
@@ -141,9 +137,9 @@ const AddRecord = (props: any) => {
                                         <Form.Control 
                                             placeholder="별" 
                                             onChange={(e) => {
-                                                var _tmp = [...infos];
-                                                _tmp[index].star = e.target.value === '' ? 0 : parseInt(e.target.value);
-                                                setInfos(_tmp);
+                                                var _tmp: RecentInfo = JSON.parse(JSON.stringify(props.info));
+                                                _tmp.users[index].star = e.target.value === '' ? 0 : parseInt(e.target.value);
+                                                props.setInfo(_tmp);
                                             }}
                                             value={value.star === 0 ? '' : value.star}
                                             type="number"
@@ -154,16 +150,9 @@ const AddRecord = (props: any) => {
                             );
                         })
                     }
-                    
-                    {
-                        // <SupportHolder 
-                        //     supportInfos={supportInfos}
-                        //     setSupportInfos={setSupportInfos}
-                        // />
-                    }
 
                     <PerpectHolder 
-                        names={infos.map((value: Info) => value.name)}
+                        names={ props.info.users.map((value: Info) => value.name) }
                         perpectInfos={perpectInfos}
                         setPerpectInfos={setPerpectInfos}
                     />
@@ -173,29 +162,20 @@ const AddRecord = (props: any) => {
                             <Form.Control 
                                 placeholder="공탁금" 
                                 onChange={(e) => {
-                                    setDeposit(e.target.value === '' ? 0 : parseInt(e.target.value));
+                                    var _tmp: RecentInfo = JSON.parse(JSON.stringify(props.info));
+                                    _tmp.deposit = e.target.value === '' ? 0 : parseInt(e.target.value);
+                                    props.setInfo(_tmp);
                                 }}
                                 type="number"
-                                value={deposit === 0 ? '' : deposit}
+                                value={props.info.deposit}
                                 min="0"
                             />
                         </Col>
-                        {/*
-                        <Col>
-                            <Button 
-                                style={{width: "100%"}} 
-                                onClick={() => {
-                                    setSupportInfos( [...supportInfos, { id: supportID, name: "", content: "" }] );
-                                    setSupportID(supportID + 1);
-                                }}
-                            > 후원 추가 </Button>
-                        </Col>
-                        */}
                         <Col xs={2}>
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {
-                                    setPerpectInfos( [...perpectInfos, { id: perpectID, name: infos[0].name, select_id: -1 }] );
+                                    setPerpectInfos( [...perpectInfos, { id: perpectID, name: props.info.users[0].name, select_id: -1 }] );
                                     setPerpectID(perpectID + 1);
                                 }}
                             > 역만 </Button>
@@ -215,7 +195,7 @@ const AddRecord = (props: any) => {
                             <Button 
                                 style={{width: "300px"}}
                                 onClick={post_data}
-                            >등록</Button>
+                            >수정</Button>
                         </Col>
                     </Row>
                 </Form>
@@ -224,4 +204,4 @@ const AddRecord = (props: any) => {
     );
 };
 
-export default AddRecord;
+export default FixRecord;

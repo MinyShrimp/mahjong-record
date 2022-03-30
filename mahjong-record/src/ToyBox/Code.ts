@@ -14,6 +14,8 @@ export const ErrorCode: { [key: number]: string } = {
     11: "등록된 ID가 아닙니다.",           // "LOGIN_FAILED_NOT_FOUND_ID"
     12: "패스워드가 일치하지 않습니다.",   // "LOGIN_FAILED_NOT_MATCH_PWD"
     13: "로그인 성공.",                    // "LOGIN_SUCCESS"
+    14: "삭제 성공.",                      // "DELETE_SUCCESS"
+    15: "수정 성공.",                      // "UPDATE_SUCCESS"
     99: "알 수 없는 이유로 등록을 실패했습니다."
 };
 

@@ -6,7 +6,7 @@ import { RankingInfo } from "../ToyBox/Interfaces";
 import { roundToTwo, numberWithCommas, goServer } from "../ToyBox/Functions";
 import Config from "../ToyBox/Config";
 
-const Record = () => {
+const Record = (props: any) => {
     const [modalShow, setModalShow] = useState(false);
     const [userDatas, setUserDatas] = useState<Array<RankingInfo>>([]);
 
@@ -23,25 +23,11 @@ const Record = () => {
 
     useEffect(() => {
         get_users();
+        props.setLabel("순위");
     }, []);
 
     return (
         <>
-            <Navbar bg="light" fixed="top">
-                <Container>
-                    <Navbar.Brand>순위</Navbar.Brand>
-                    
-                    {
-                        // <Nav className="me-auto">
-                        //     <Form.Check label={`20국 이상`} className="nav-item" id="check" />
-                        // </Nav>
-                        //<Nav className="justify-content-end">
-                        //    <Nav.Link href="#">로그인</Nav.Link>
-                        //</Nav>
-                    }
-                </Container>
-            </Navbar>
-
             <div className="Main-Page">
                 <Table striped bordered hover className="text-center">
                     <thead>

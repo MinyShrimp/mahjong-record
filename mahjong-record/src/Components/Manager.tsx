@@ -4,15 +4,13 @@ import Login from './Login';
 import Config from '../ToyBox/Config';
 import { goServer } from '../ToyBox/Functions';
 
-const Manager = () => {
+const Manager = (props: any) => {
     const [modalShow, setModalShow] = useState<boolean>(false);
-    const [isLogin,   setIsLogin]   = useState<boolean>(false);
-
-    var headers = JSON.parse(JSON.stringify(Config.headers));
-    headers["authorization"] = sessionStorage.getItem('a_token');
 
     const validation = async () => {
         try {
+            var headers = JSON.parse(JSON.stringify(Config.headers));
+            headers["authorization"] = sessionStorage.getItem('a_token');
             const rows: any = await goServer("/api/root/autho", "GET", headers);
             if( rows.code !== 200 ) {
                 const id = sessionStorage.getItem('id');
@@ -26,15 +24,18 @@ const Manager = () => {
                     );
                     if(_rows.code === 200) {
                         sessionStorage.setItem('a_token', _rows.accessToken);
+                        props.setIsLogin(true);
+                        sessionStorage.setItem('isLogin', '1');
                     } else {
-                        setModalShow(true);    
+                        setModalShow(true);
                     }
                 } else {
                     setModalShow(true);
                 }
             } else {
                 setModalShow(false);
-                setIsLogin(true);
+                props.setIsLogin(true);
+                sessionStorage.setItem('isLogin', '1');
             }
         } catch(e: any) {
             setModalShow(true);
@@ -46,19 +47,16 @@ const Manager = () => {
     }, []);
 
     return (
-        <div>
+        <> 
             <Login 
                 show={modalShow}
                 onHide={() => {
                     setModalShow(false);
+                    props.setShowLogin(false);
                 }}
-                setIsLogin={setIsLogin}
+                setIsLogin={props.setIsLogin}
             />
-
-            {
-                isLogin ? "로그인 성공" : "로그인 실패"
-            }
-        </div>
+        </>
     );
 };
 

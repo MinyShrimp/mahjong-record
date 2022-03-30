@@ -33,6 +33,7 @@ const Login = (props: any) => {
                     const value = rows.token[key];
                     sessionStorage.setItem(key, value);
                 });
+                sessionStorage.setItem('isLogin', "1");
                 props.setIsLogin(true);
                 props.onHide();
                 

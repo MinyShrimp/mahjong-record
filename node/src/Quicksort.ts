@@ -18,10 +18,10 @@ function partition(
     start: number = 0,
     end: number = arr.length
 ) {
-    let pivot: number = parseInt(arr[start].score);
+    let pivot: number = arr[start].score;
     let swapIndex: number = start;
     for (let i = start + 1; i < end; i++) {
-        if (parseInt(arr[i].score) > pivot) {
+        if (arr[i].score > pivot) {
             swapIndex++;
             swap(arr, i, swapIndex);
         }

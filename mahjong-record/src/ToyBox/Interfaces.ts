@@ -1,12 +1,4 @@
 
-export interface Info {
-    seat:    number,
-    name:    string,
-    score:   string,
-    star:    string,
-    perpect: string
-};
-
 export interface RankingInfo {
     Name:     string,
     Uma:      number,
@@ -32,7 +24,7 @@ export interface PerpectInfo {
     select_id: number
 };
 
-export interface RecentUserInfo {
+export interface Info {
     name:        string,
     perpect:     Array<number>,
     ranking:     number,
@@ -44,7 +36,7 @@ export interface RecentUserInfo {
 
 export interface RecentInfo {
     index:       number,
-    users:       Array<RecentUserInfo>,
+    users:       Array<Info>,
     deposit:     number,
     update_time: Date
 };

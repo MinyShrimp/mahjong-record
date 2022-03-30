@@ -1,10 +1,12 @@
 
 export interface Info {
-    seat:    number,
     name:    string,
-    score:   string,
-    star:    string,
-    perpect: string
+    perpect: Array<number>
+    ranking: number,
+    score:   number,
+    seat:    number,
+    star:    number,
+    uma:     number
 };
 
 export interface Test {
@@ -27,5 +29,7 @@ export const ErrorCode = {
     "LOGIN_FAILED_NOT_FOUND_ID": 11,
     "LOGIN_FAILED_NOT_MATCH_PWD": 12,
     "LOGIN_SUCCESS": 13,
+    "DELETE_SUCCESS": 14,
+    "UPDATE_SUCCESS": 15,
     "UNDEFIND_ERROR": 99
 };
