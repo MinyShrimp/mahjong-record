@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 import Config from "../ToyBox/Config";
 import { Info, RecentInfo } from '../ToyBox/Interfaces';

@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+    db:
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: "root"
+            MYSQL_PASSWORD: "root"
+            MYSQL_DATABASE: "Mahjong"
+        command:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+        ports:
+            - 3306:3306
+    apiserver:
+        build:
+            context: 
+            dockerfile: Dockerfile
+        environment:
+            - MYSQL_HOST=
+        volumes:
+            - ./apiserver/:/app/
+        ports: 
+            - 8001:8001
+    webserver:
+        build:
+            context: 
+            dockerfile: Dockerfile
+        environment:
+            - API_HOST=
+        volumes:
+            - ./webserver/:/app/
+        ports: 
+            - 80:8002

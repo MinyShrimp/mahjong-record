@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navbar, Container, Button, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 
 import AddRecord from './AddRecord';
 import { RankingInfo } from "../ToyBox/Interfaces";

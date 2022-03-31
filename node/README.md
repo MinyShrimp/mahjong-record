@@ -3,6 +3,7 @@
 * brew install docker node@16
 * brew install mysql@5.7 mysql-client@5.7
 * yarn add express typescript ts-node nodemon @types/node @types/express
+* yarn add mysql @types/mysql
 * yarn add cors @types/cors body-parser @types/body-parser
 * yarn add crypto-js @types/crypto-js
 * yarn add jsonwebtoken
