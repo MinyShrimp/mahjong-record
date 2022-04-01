@@ -5,29 +5,29 @@ import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
 import { PerpectInfo, Info, RecentInfo } from "../ToyBox/Interfaces";
-import { goServer } from "../ToyBox/Functions";
-import Select       from "react-select";
+import { goServer }  from "../ToyBox/Functions";
+import Creatable     from "react-select/creatable";
 
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
 
-    const [perpectID, setPerpectID] = useState<number>(0);
+    const [perpectID, setPerpectID]       = useState<number>(0);
     const [perpectInfos, setPerpectInfos] = useState<PerpectInfo[]>([]);
 
     const normal_infos = [
-        { seat: 0, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 1, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 2, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
-        { seat: 3, name: "", score: 0, star: 0, perpect: [], ranking: 0, uma: 0 },
+        { seat: 0, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
+        { seat: 1, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
+        { seat: 2, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
+        { seat: 3, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
     ];
 
     const [isShowWarning, setIsShowWarning] = useState<boolean>(false);
     const [warningReason, setWarningReason] = useState<string>("");
 
-    const [infos, setInfos]         = useState<Info[]>(normal_infos);
-    const [deposit, setDeposit]     = useState<number>(0);
-    const [names, setNames]         = useState<Array<string>>([]);
-    const [isPluses, setIsPluses] = useState<Array<boolean>>([ true, true, true, true ]);
+    const [infos, setInfos]                 = useState<Info[]>(normal_infos);
+    const [deposit, setDeposit]             = useState<number>(0);
+    const [names, setNames]                 = useState<Array<string>>([]);
+    const [isPluses, setIsPluses]           = useState<Array<boolean>>([ true, true, true, true ]);
 
     const init_data = () => {
         setInfos(normal_infos);
@@ -36,10 +36,10 @@ const AddRecord = (props: any) => {
         setWarningReason("");
         setDeposit(0);
         setIsPluses([ true, true, true, true ]);
-        get_names();
+        getNamesInServer();
     }
 
-    const get_names = async () => {
+    const getNamesInServer = async () => {
         try {
             const rows: any = await goServer( "/api/names", "GET", Config.headers );
             if(rows.result !== 99) {
@@ -63,13 +63,13 @@ const AddRecord = (props: any) => {
     }
 
     const make_post_data = (): RecentInfo => {
-        var _tmp = [...infos];
-        _tmp.forEach((item  : any) => { item.perpect = []; });
+        var info = [...infos];
+        info.forEach((item  : any) => { item.perpect = ""; });
         perpectInfos.forEach((value) => {
-            var _index = _tmp.findIndex((item) => item.name === value.name );
-            if( _index !== -1 ) { _tmp[_index].perpect.push( value.select_id ); }
+            var _index = info.findIndex((item) => item.name === value.name );
+            if( _index !== -1 ) { info[_index].perpect += value.select_id + '|'; }
         });
-        setInfos(_tmp);
+        setInfos(info);
         return {
             index: 0, users: infos, deposit: deposit, update_time: new Date()
         };
@@ -111,7 +111,7 @@ const AddRecord = (props: any) => {
                                 <Row className="mb-3" key={index}>
                                     <Col xs={1} className="form-title input-pd"> {titles[index]} </Col>
                                     <Col className="input-pd">
-                                        <Select 
+                                        <Creatable 
                                             onChange={(e: any) => {
                                                 var _tmp = [...infos];
                                                 _tmp[index].name = e.value;

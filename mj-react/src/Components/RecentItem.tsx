@@ -130,9 +130,16 @@ const RecentItem = (props: any) => {
                         <tr key={index}>
                             <td colSpan={6}>
                                 {user.name} ({titles[user.seat]}) : {" "}
-                                { user.perpect.map((perpect: number, i: number) => {
-                                    return Perpects[perpect] + ( i === user.perpect.length - 1 ? "" :  " / ");
-                                })}
+                                { 
+                                    user.perpect.split('|').map((v: string, i: number) => {
+                                        const perpect = parseInt(v);
+                                        return (
+                                            v !== '' ?
+                                            Perpects[perpect] + ( i === user.perpect.length - 2 ? "" :  " / ") :
+                                            null
+                                        );
+                                    })
+                                }
                             </td>
                         </tr>
                     );

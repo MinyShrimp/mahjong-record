@@ -1,7 +1,7 @@
 
 export interface Info {
     name:    string,
-    perpect: Array<number>
+    perpect: string,
     ranking: number,
     score:   number,
     seat:    number,

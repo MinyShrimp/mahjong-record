@@ -30,11 +30,10 @@ export const isCleanData = (datas: Array<Info>, deposit: number): Test => {
         if (star < 0) {
             return { result: false, contents: ErrorCode["MINUS_STAR"] };
         }
-
-        let perpect = datas[i].perpect;
-        perpect.pop();
+        
+        let perpect = datas[i].perpect.split('|'); perpect.pop();
         for (var j = 0; j < perpect.length; j++) {
-            let _tmp = perpect[j];
+            let _tmp = parseInt(perpect[j]);
             if (_tmp < 1 || _tmp > 17) {
                 return {
                     result: false,
@@ -202,7 +201,7 @@ export const addRecord = async (body: any) => {
         let seat = value.seat;
         let uma = Math.round(score / 1000) + plus_uma[index];
         let star = value.star;
-        let perpect = value.perpect.join("|");
+        let perpect = value.perpect;
 
         sql_data +=
             `('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}'` +

@@ -36,12 +36,9 @@ const Recent = (props: any) => {
     
                     var _tmp: Array<Info> = [];
                     for(var i = 0; i < 4; i++) {
-                        var _perpects = perpects[i].split('|');
-                        if( _perpects[0] === '' ) { _perpects.pop(); }
-    
                         _tmp.push({
                             name:        names[i],
-                            perpect:     _perpects,
+                            perpect:     perpects[i],
                             ranking:     parseInt(rankings[i]),
                             score:       parseInt(scores[i]),
                             seat:        parseInt(seats[i]),

@@ -1,11 +1,10 @@
 import React from "react";
-import { Button, Form, Row, Col } from "react-bootstrap";
+import { Button, Row, Col } from "react-bootstrap";
 import { PerpectInfo } from "../ToyBox/Interfaces";
 import { Perpects } from "../ToyBox/Code";
 import Select from "react-select";
 
 const PerpectItem = (props: any) => {
-
     const getNames = () => {
         var _result: Array<any> = [];
         props.names.forEach((_v: string, _i:number) => {
@@ -23,11 +22,12 @@ const PerpectItem = (props: any) => {
                     onChange={(e: any) => {
                         let _tmp = [...props.perpectInfos];
                         let index = _tmp.findIndex((item) => { return props.value.id === item.id; });
-                        if(index !== -1) { _tmp[index].name = e.label; }
+                        if(index !== -1) { _tmp[index].name = e.value; }
                         props.setPerpectInfos(_tmp);
                     }}
                     placeholder="이름" 
                     options={getNames()}
+                    defaultValue={{ "value": props.value.name, "label": props.value.name }}
                 />
             </Col>
             <Col className="input-pd">
@@ -40,6 +40,7 @@ const PerpectItem = (props: any) => {
                     }}
                     placeholder="역만" 
                     options={Object.values(Perpects).map((_v: string, _i: number) => { return { "value": _i + 1, "label": _v } })}
+                    defaultValue={{ "value": props.value.select_id, "label": Perpects[props.value.select_id] }}
                 />
             </Col>
             <Col xs={2} className="input-pd">
