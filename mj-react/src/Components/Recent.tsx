@@ -73,7 +73,7 @@ const Recent = (props: any) => {
     }, []);
 
     return (
-        <>
+        <div className="Main-Container">
             <div className="Main-Page">
                 { datas.map((value, index) => <RecentItem key={index} value={value} isLogin={props.isLogin} />) }
             </div>
@@ -90,7 +90,7 @@ const Recent = (props: any) => {
                     setModalShow(false);
                 }}
             />
-        </>
+        </div>
     );
 };
 

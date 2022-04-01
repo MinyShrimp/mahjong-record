@@ -27,7 +27,7 @@ const Record = (props: any) => {
     }, []);
 
     return (
-        <>
+        <div className="Main-Container">
             <div className="Main-Page">
                 <Table striped bordered hover className="text-center">
                     <thead>
@@ -51,6 +51,7 @@ const Record = (props: any) => {
                             <th>4위율</th>
                         </tr>
                     </thead>
+                        
                     <tbody>
                         {
                             userDatas.length !== 0 ? 
@@ -95,7 +96,7 @@ const Record = (props: any) => {
                     get_users();
                 }}
             />
-        </>
+        </div>
     );
 };
 

@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 
-//import SupportHolder from "./SupportHolder";
 import PerpectHolder from "./PerpectHolder";
 import { ErrorCode } from "../ToyBox/Code";
 import Config        from "../ToyBox/Config";
-//import { SupportInfo, PerpectInfo, Info } from "../ToyBox/Interfaces";
 import { PerpectInfo, Info, RecentInfo } from "../ToyBox/Interfaces";
 import { goServer } from "../ToyBox/Functions";
+import Select       from "react-select";
 
 const AddRecord = (props: any) => {
     const titles = ['東', '南', '西', '北'];
-    //const [supportID, setSupportID] = useState<number>(0);
-    //const [supportInfos, setSupportInfos] = useState<SupportInfo[]>([]);
 
     const [perpectID, setPerpectID] = useState<number>(0);
     const [perpectInfos, setPerpectInfos] = useState<PerpectInfo[]>([]);
@@ -27,17 +24,18 @@ const AddRecord = (props: any) => {
     const [isShowWarning, setIsShowWarning] = useState<boolean>(false);
     const [warningReason, setWarningReason] = useState<string>("");
 
-    const [infos, setInfos]     = useState<Info[]>(normal_infos);
-    const [deposit, setDeposit] = useState<number>(0);
-    const [names, setNames]     = useState<Array<string>>([]);
+    const [infos, setInfos]         = useState<Info[]>(normal_infos);
+    const [deposit, setDeposit]     = useState<number>(0);
+    const [names, setNames]         = useState<Array<string>>([]);
+    const [isPluses, setIsPluses] = useState<Array<boolean>>([ true, true, true, true ]);
 
     const init_data = () => {
-        //setSupportInfos([]);
         setInfos(normal_infos);
         setPerpectInfos([]);
         setIsShowWarning(false);
         setWarningReason("");
         setDeposit(0);
+        setIsPluses([ true, true, true, true ]);
         get_names();
     }
 
@@ -54,21 +52,30 @@ const AddRecord = (props: any) => {
         }
     }
 
+    const getNames = () => {
+        var _result: Array<any> = [];
+        names.forEach((_v: string, _i:number) => {
+            if( _v !== '' ) {
+                _result.push({ "value": _v, "label": _v })
+            }
+        });
+        return _result;
+    }
+
     const make_post_data = (): RecentInfo => {
         var _tmp = [...infos];
+        _tmp.forEach((item  : any) => { item.perpect = []; });
         perpectInfos.forEach((value) => {
             var _index = _tmp.findIndex((item) => item.name === value.name );
             if( _index !== -1 ) { _tmp[_index].perpect.push( value.select_id ); }
         });
-
+        setInfos(_tmp);
         return {
-            index: 0, users: _tmp, deposit: deposit, update_time: new Date()
+            index: 0, users: infos, deposit: deposit, update_time: new Date()
         };
     }
 
     const post_data = async () => {
-        make_post_data();
-
         try {
             const rows: any = await goServer( "/api/records", "POST", Config.headers, JSON.stringify(make_post_data()) );
             const code: number = rows.result;
@@ -93,7 +100,6 @@ const AddRecord = (props: any) => {
         <Modal
             show={props.show}
             onHide={props.onHide}
-            size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
@@ -103,43 +109,67 @@ const AddRecord = (props: any) => {
                         infos.map((value, index) => {
                             return (
                                 <Row className="mb-3" key={index}>
-                                    <Col xs={1} className="form-title"> {titles[index]} </Col>
-                                    <Col>
-                                        <Form.Control 
+                                    <Col xs={1} className="form-title input-pd"> {titles[index]} </Col>
+                                    <Col className="input-pd">
+                                        <Select 
+                                            onChange={(e: any) => {
+                                                var _tmp = [...infos];
+                                                _tmp[index].name = e.value;
+                                                setInfos(_tmp);
+                                            }}
                                             placeholder="이름" 
-                                            onChange={(e) => {
-                                                var _tmp = [...infos];
-                                                _tmp[index].name = e.target.value;
-                                                setInfos(_tmp);
-                                            }}
-                                            value={value.name}
-                                            autoComplete="on"
-                                            list="names"
+                                            options={getNames()}
                                         />
+                                    </Col>
+                                    <Col xs={4} className="input-pd">
+                                        <div className="input-group">
+                                           <div className="input-group-btn">
+                                               {
+                                                   isPluses[index] ? 
+                                                   <button 
+                                                       className="btn btn-info"
+                                                       onClick={() => { 
+                                                           var _tmp = [...isPluses];
+                                                           _tmp[index] = false;
+                                                           setIsPluses(_tmp); 
 
-                                        <datalist id="names">
-                                            {
-                                                names.map((value, index) => {
-                                                    return (
-                                                        <option value={value} key={index} />
-                                                    );
-                                                })
-                                            }
-                                        </datalist>
+                                                           var _users = [...infos];
+                                                           _users[index].score *= _users[index].score < 0 ? 1 : -1;
+                                                           setInfos(_users);
+                                                       }}
+                                                   >＋</button> :
+                                                   <button 
+                                                       className="btn btn-danger"
+                                                       onClick={() => { 
+                                                           var _tmp = [...isPluses];
+                                                           _tmp[index] = true;
+                                                           setIsPluses(_tmp); 
+
+                                                           var _users = [...infos];
+                                                           _users[index].score *= _users[index].score > 0 ? 1 : -1;
+                                                           setInfos(_users);
+                                                       }}
+                                                   >－</button>
+                                               }
+                                           </div>
+                                           <input 
+                                                placeholder="점수" 
+                                                onChange={(e) => {
+                                                    var _users = [...infos];
+                                                    _users[index].score = e.target.value === '' ? 0 : parseInt(e.target.value);
+                                                    setInfos(_users);
+
+                                                    var _tmp = [...isPluses];
+                                                    _tmp[index] = _users[index].score > 0;
+                                                    setIsPluses(_tmp); 
+                                                }}
+                                                value={value.score === 0 ? '' : value.score}
+                                                type="number"
+                                                className="form-control"
+                                            />
+                                        </div> 
                                     </Col>
-                                    <Col xs={3}>
-                                        <Form.Control 
-                                            placeholder="점수" 
-                                            onChange={(e) => {
-                                                var _tmp = [...infos];
-                                                _tmp[index].score = e.target.value === '' ? 0 : parseInt(e.target.value);
-                                                setInfos(_tmp);
-                                            }}
-                                            value={value.score === 0 ? '' : value.score}
-                                            type="number"
-                                        />
-                                    </Col>
-                                    <Col xs={2}>
+                                    <Col xs={2} className="input-pd">
                                         <Form.Control 
                                             placeholder="별" 
                                             onChange={(e) => {
@@ -156,13 +186,6 @@ const AddRecord = (props: any) => {
                             );
                         })
                     }
-                    
-                    {
-                        // <SupportHolder 
-                        //     supportInfos={supportInfos}
-                        //     setSupportInfos={setSupportInfos}
-                        // />
-                    }
 
                     <PerpectHolder 
                         names={infos.map((value: Info) => value.name)}
@@ -171,7 +194,7 @@ const AddRecord = (props: any) => {
                     />
 
                     <Row className="mb-3">
-                        <Col>
+                        <Col className="input-pd">
                             <Form.Control 
                                 placeholder="공탁금" 
                                 onChange={(e) => {
@@ -182,18 +205,7 @@ const AddRecord = (props: any) => {
                                 min="0"
                             />
                         </Col>
-                        {/*
-                        <Col>
-                            <Button 
-                                style={{width: "100%"}} 
-                                onClick={() => {
-                                    setSupportInfos( [...supportInfos, { id: supportID, name: "", content: "" }] );
-                                    setSupportID(supportID + 1);
-                                }}
-                            > 후원 추가 </Button>
-                        </Col>
-                        */}
-                        <Col xs={2}>
+                        <Col xs={2} className="input-pd">
                             <Button 
                                 style={{width: "100%"}} 
                                 onClick={() => {

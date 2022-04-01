@@ -12,7 +12,7 @@ import Database                  from "./Database";
 import { isCleanData, generateAccessToken, generateRefreshToken, authenticateAccessToken, deleteRecord, addRecord } from "./Functions";
 
 const app = express();
-const cor = cors({ origin: 'http://shrimp2ubt.ddns.net', optionsSuccessStatus: 200 });
+const cor = cors({ origin: '*', optionsSuccessStatus: 200 });
 app.use(cor);
 app.use(bodyParser.json());
 app.use(morgan('combined', {stream}));
