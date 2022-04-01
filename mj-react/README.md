@@ -6,6 +6,7 @@
 * yarn add react-router-dom @types/react-router-dom
 * yarn add crypto-js @types/crypto-js jsonwebtoken
 * yarn add @types/react-bootstrap 
+* yarn add react-aria react-select
 
 ## 사이트
 * https://www.npmjs.com/package/react-datepicker
