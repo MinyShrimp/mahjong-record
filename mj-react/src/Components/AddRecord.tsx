@@ -15,10 +15,10 @@ const AddRecord = (props: any) => {
     const [perpectInfos, setPerpectInfos] = useState<PerpectInfo[]>([]);
 
     const normal_infos = [
-        { seat: 0, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
-        { seat: 1, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
-        { seat: 2, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
-        { seat: 3, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0 },
+        { seat: 0, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0, link: "" },
+        { seat: 1, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0, link: "" },
+        { seat: 2, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0, link: "" },
+        { seat: 3, name: "", score: 0, star: 0, perpect: "", ranking: 0, uma: 0, link: "" },
     ];
 
     const [isShowWarning, setIsShowWarning] = useState<boolean>(false);
@@ -28,6 +28,7 @@ const AddRecord = (props: any) => {
     const [deposit, setDeposit]             = useState<number>(0);
     const [names, setNames]                 = useState<Array<string>>([]);
     const [isPluses, setIsPluses]           = useState<Array<boolean>>([ true, true, true, true ]);
+    const [link, setLink]                   = useState<string>("");
 
     const init_data = () => {
         setInfos(normal_infos);
@@ -37,6 +38,7 @@ const AddRecord = (props: any) => {
         setDeposit(0);
         setIsPluses([ true, true, true, true ]);
         getNamesInServer();
+        setLink("");
     }
 
     const getNamesInServer = async () => {
@@ -71,7 +73,7 @@ const AddRecord = (props: any) => {
         });
         setInfos(info);
         return {
-            index: 0, users: infos, deposit: deposit, update_time: new Date()
+            index: 0, users: infos, deposit: deposit, link: link, update_time: new Date()
         };
     }
 
@@ -203,6 +205,15 @@ const AddRecord = (props: any) => {
                                 type="number"
                                 value={deposit === 0 ? '' : deposit}
                                 min="0"
+                            />
+                        </Col>
+                        <Col className="input-pd">
+                            <Form.Control 
+                                placeholder="패보 URL" 
+                                onChange={(e) => {
+                                    setLink( e.target.value );
+                                }}
+                                value={link}
                             />
                         </Col>
                         <Col xs={2} className="input-pd">

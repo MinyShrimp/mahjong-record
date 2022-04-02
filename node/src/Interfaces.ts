@@ -6,7 +6,8 @@ export interface Info {
     score:   number,
     seat:    number,
     star:    number,
-    uma:     number
+    uma:     number,
+    link:    string
 };
 
 export interface Test {

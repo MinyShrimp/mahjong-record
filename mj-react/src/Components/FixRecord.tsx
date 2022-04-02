@@ -75,7 +75,7 @@ const FixRecord = (props: any) => {
         });
 
         return {
-            index: props.info.index, users: users, deposit: props.info.deposit, update_time: new Date()
+            index: props.info.index, users: users, deposit: props.info.deposit, link: props.info.link, update_time: new Date()
         };
     }
 
@@ -212,6 +212,17 @@ const FixRecord = (props: any) => {
                                 type="number"
                                 value={props.info.deposit === 0 ? '' : props.info.deposit}
                                 min="0"
+                            />
+                        </Col>
+                        <Col className="input-pd">
+                            <Form.Control 
+                                placeholder="패보 URL" 
+                                onChange={(e) => {
+                                    var _info = JSON.parse(JSON.stringify(props.info));
+                                    _info.link = e.target.value;
+                                    props.setInfo(_info);
+                                }}
+                                value={props.info.link}
                             />
                         </Col>
                         <Col xs={2} className="input-pd">

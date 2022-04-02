@@ -47,7 +47,7 @@ const Config_1 = __importDefault(require("./Config"));
 const Database_1 = __importDefault(require("./Database"));
 const Functions_1 = require("./Functions");
 const app = (0, express_1.default)();
-const cor = (0, cors_1.default)({ origin: 'http://shrimp2ubt.ddns.net', optionsSuccessStatus: 200 });
+const cor = (0, cors_1.default)({ origin: '*', optionsSuccessStatus: 200 });
 app.use(cor);
 app.use(body_parser_1.default.json());
 app.use((0, morgan_1.default)('combined', { stream: morganMiddleware_1.stream }));
@@ -60,7 +60,7 @@ app.get('/helloworld/:id', (req, res) => {
 //////////////////////////////////////////////////
 // /api
 //////////////////////////////////////////////////
-app.use('/api/:id', cor, (req, res, next) => {
+app.use('/api/:id', (req, res, next) => {
     if (req.get('token') !== Config_1.default.token) {
         res.send(JSON.stringify({ result: Interfaces_1.ErrorCode["UNDEFIND_ERROR"] }));
     }

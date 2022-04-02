@@ -24,6 +24,7 @@ const Recent = (props: any) => {
                 rows.forEach((value: any) => {
                     const index      = value.RecordIndex;
                     const deposit    = value.Deposit;
+                    const link       = value.Link;
                     const updateTime = value.UpdateTime;
     
                     const names      = value.Names.split(',');
@@ -51,6 +52,7 @@ const Recent = (props: any) => {
                         index:       index,
                         users:       _tmp,
                         deposit:     deposit,
+                        link:        link,
                         update_time: new Date(updateTime)
                     });
                 })

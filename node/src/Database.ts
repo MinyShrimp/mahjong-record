@@ -95,7 +95,7 @@ export default class Database {
     public insertIndexRecord(data: string) {
         const sql = `
             INSERT INTO 
-            IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
+            IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit, Link) 
             ${data};
         `;
         return this._promise(sql, "insert index error");
@@ -109,7 +109,7 @@ export default class Database {
             SELECT 
                 b.RecordIndex, a.Names, a.Rankings, a.Scores, 
                 a.Seats, a.Perpects, a.Umas, a.Stars, 
-                b.UpdateTime, b.Deposit
+                b.Deposit, b.Link, b.UpdateTime
             FROM IndexRecord AS b
             JOIN (
                 SELECT 

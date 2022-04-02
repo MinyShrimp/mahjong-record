@@ -5,7 +5,11 @@ import Config from "./Config";
 import Database from "./Database";
 import { QuickSort } from "./Quicksort";
 
-export const isCleanData = (datas: Array<Info>, deposit: number): Test => {
+export const isCleanData = (body: any): Test => {
+    const datas:   Array<Info>   = body.users;
+    const deposit: number        = body.deposit;
+    const link:    string        = body.link;
+
     if (deposit < 0) {
         return { result: false, contents: ErrorCode["MINUS_DEPOSIT"] };
     }
@@ -129,7 +133,8 @@ export const authenticateAccessToken = (
 
 export const addRecord = async (body: any) => {
     let data: Array<Info> = body.users;
-    let deposit: number = body.deposit;
+    let deposit: number   = body.deposit;
+    let link:    string   = body.link;
 
     data = QuickSort(data);
     const plus_uma = getUmas(data);
@@ -195,17 +200,19 @@ export const addRecord = async (body: any) => {
 
     let sql_data = "VALUES ";
     data.forEach((value: Info, index: number) => {
-        let name = value.name;
-        let score = value.score;
+        let name    = value.name;
+        let score   = value.score;
         let ranking = index + 1;
-        let seat = value.seat;
-        let uma = Math.round(score / 1000) + plus_uma[index];
-        let star = value.star;
+        let seat    = value.seat;
+        let uma     = Math.round(score / 1000) + plus_uma[index];
+        let star    = value.star;
         let perpect = value.perpect;
 
         sql_data +=
-            `('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}'` +
-            (index === 0 ? `, ${deposit})` : `, 0)`);
+            `
+                ('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}',
+                ${ index === 0 ? deposit : 0 }, '${ index === 0 ? link : '' }' )
+            `;
         sql_data += index === 3 ? ";" : ",";
     });
 

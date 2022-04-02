@@ -58,20 +58,20 @@ UPDATE UserRecord
 ```
 
 ## 인덱스 기반 Database
-| Name        | Type        | 설명                        |
-| ----------- | ----------- | --------------------------- |
-| ID          | INT         | -                           |
-| RecordIndex | TIMESTAMP   | -                           |
-| Name        | VARCHAR(30) | 이름                        |
-| Score       | INT         | 점수                        |
-| Ranking     | TINYINT     | 순위                        |
-| Seat        | TINYINT     | 자리( 동:0 남:1 서:2 북:3 ) |
-| Uma         | TINYINT     | 우마                        |
-| Star        | TINYINT     | 별( 하네만: 1 )             |
-| Perpect     | VARCHAR(30) | 역만( 1\|2\|3\|4 )          |
-| Deposit     | INT         | 공탁금                      |
-| UpdateTime  | TIMESTAMP   | 언제 업데이트했는지         |
-
+| Name        | Type         | 설명                        |
+| ----------- | ------------ | --------------------------- |
+| ID          | INT          | -                           |
+| RecordIndex | TIMESTAMP    | -                           |
+| Name        | VARCHAR(30)  | 이름                        |
+| Score       | INT          | 점수                        |
+| Ranking     | TINYINT      | 순위                        |
+| Seat        | TINYINT      | 자리( 동:0 남:1 서:2 북:3 ) |
+| Uma         | TINYINT      | 우마                        |
+| Star        | TINYINT      | 별( 하네만: 1 )             |
+| Perpect     | VARCHAR(30)  | 역만( 1\|2\|3\|4 )          |
+| Deposit     | INT          | 공탁금                      |
+| Link        | VARCHAR(150) | 패보                        |
+| UpdateTime  | TIMESTAMP    | 언제 업데이트했는지         |
 ```
 CREATE TABLE IndexRecord (
     ID            INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,6 +84,7 @@ CREATE TABLE IndexRecord (
     Star          TINYINT DEFAULT 0,
     Perpect       VARCHAR(30) NOT NULL,
     Deposit       INT DEFAULT 0,
+    Link          VARCHAR(150),
     UpdateTime    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET UTF8;
 ```
@@ -92,8 +93,8 @@ DROP TABLE IndexRecord;
 DELETE FROM IndexRecord;
 ALTER TABLE IndexRecord AUTO_INCREMENT=1;
 INSERT INTO 
-    IndexRecord(RecordIndex, Name, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
-    VALUES(0, "", 0, 0, 0, 0, 0, "", 0);
+    IndexRecord(RecordIndex, Name, Score, Ranking, Seat, Uma, Star, Perpect, Link, Deposit) 
+    VALUES(0, "", 0, 0, 0, 0, 0, "", "", 0);
 ```
 
 ## 관리자 ID Database

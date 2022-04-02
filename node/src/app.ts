@@ -40,10 +40,7 @@ app.use('/api/:id', (req: Request, res: Response, next) => {
 //////////////////////////////////////////////////
 app.post('/api/records', async (req: Request, res: Response) => {
     try{
-        let data: Array<Info> = req.body.users;
-        let deposit: number = req.body.deposit;
-
-        let data_test: Test = isCleanData(data, deposit);
+        let data_test: Test = isCleanData(req.body);
 
         if (data_test.result) {
             await addRecord(req.body);
@@ -81,7 +78,7 @@ app.put('/api/records', authenticateAccessToken, async (req: Request, res: Respo
         let data: Array<Info> = req.body.users;
         let deposit: number = req.body.deposit;
 
-        let data_test: Test = isCleanData(data, deposit);
+        let data_test: Test = isCleanData(req.body);
 
         if (data_test.result) {
             const fl = await deleteRecord(req.body);

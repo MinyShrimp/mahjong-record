@@ -13,7 +13,7 @@ const RecentItem = (props: any) => {
     
     const [modalShow, setModalShow] = useState(false);
     const [info, setInfo] = useState<RecentInfo>({
-        index: 0, users: [], deposit: 0, update_time: new Date()
+        index: 0, users: [], deposit: 0, link: "", update_time: new Date()
     });
 
     const [isAlertShow, setIsAlertShow] = useState(false);
@@ -28,6 +28,7 @@ const RecentItem = (props: any) => {
         var _tmp = JSON.parse(JSON.stringify(info));
         _tmp.index = props.value.index; _tmp.users = _users;
         _tmp.deposit = props.value.deposit; _tmp.update_time = props.value.update_time;
+        _tmp.link = props.value.link;
         setInfo(_tmp);
         setModalShow(true);
     }
@@ -98,9 +99,10 @@ const RecentItem = (props: any) => {
                     <td colSpan={6}>
                         {props.value.index} /{" "}
                         {toStringByFormatting(props.value.update_time)}
+                        { props.value.link === "" ? null : <> <span> / </span> <a href={props.value.link} target='_blank'>패보</a> </> }
                         { 
                             props.isLogin ? 
-                            <> {" "} 
+                            <> {" / "} 
                                 <Button 
                                     className="btn-warning"
                                     onClick={changeFixedMode}

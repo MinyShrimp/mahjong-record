@@ -38,5 +38,6 @@ export interface RecentInfo {
     index:       number,
     users:       Array<Info>,
     deposit:     number,
-    update_time: Date
+    update_time: Date,
+    link:        string
 };

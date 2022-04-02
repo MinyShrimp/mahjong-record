@@ -38,10 +38,10 @@ const isCleanData = (datas, deposit) => {
         if (star < 0) {
             return { result: false, contents: Interfaces_1.ErrorCode["MINUS_STAR"] };
         }
-        let perpect = datas[i].perpect;
+        let perpect = datas[i].perpect.split('|');
         perpect.pop();
         for (var j = 0; j < perpect.length; j++) {
-            let _tmp = perpect[j];
+            let _tmp = parseInt(perpect[j]);
             if (_tmp < 1 || _tmp > 17) {
                 return {
                     result: false,
@@ -183,7 +183,7 @@ const addRecord = (body) => __awaiter(void 0, void 0, void 0, function* () {
         let seat = value.seat;
         let uma = Math.round(score / 1000) + plus_uma[index];
         let star = value.star;
-        let perpect = value.perpect.join("|");
+        let perpect = value.perpect;
         sql_data +=
             `('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}'` +
                 (index === 0 ? `, ${deposit})` : `, 0)`);

@@ -6,7 +6,7 @@ const Config = {
         "id": "root",
         "pwd": "root",
         "port": 3306,
-        "ip": "mahjong_db_1",
+        "ip": "172.17.0.2",
         "database": "Mahjong"
     },
     "JWT": {
