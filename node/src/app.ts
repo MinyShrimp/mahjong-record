@@ -55,7 +55,6 @@ app.post('/api/records', async (req: Request, res: Response) => {
 
 app.get('/api/records', async (req: Request, res: Response) => {
     try {
-        console.log(req.query.page)
         const page: any = req.query.page;
         if(page != undefined) {
             const rows = await Database.getInstance().getRecentAllByIndexRecord(parseInt(page));
