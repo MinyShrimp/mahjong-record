@@ -82,7 +82,6 @@ const AddRecord = (props: any) => {
             const rows: any = await goServer( "/api/records", "POST", Config.headers, JSON.stringify(make_post_data()) );
             const code: number = rows.result;
             if( code !== 0 ) {
-                console.log(rows);
                 setIsShowWarning(true);
                 setWarningReason(ErrorCode[code]);
             } else {

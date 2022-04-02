@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Button } from "react-bootstrap";
+import QueryString from 'qs';
 
 import Config from "../ToyBox/Config";
 import { Info, RecentInfo } from '../ToyBox/Interfaces';
@@ -13,12 +14,12 @@ import RecentItem from './RecentItem';
 const Recent = (props: any) => {
     const [ modalShow, setModalShow ] = useState(false);
     const [ datas, setDatas ] = useState<Array<RecentInfo>>([]);
+    const [ pages, setPages ] = useState<number>(0);
+    const location = useLocation();
 
-    const { id } = useParams();
-
-    const get_recents = async () => {
+    const getRecents = async (page: number) => {
         try {
-            const rows: any = await goServer(`/api/records/${id}`, "GET", Config.headers);
+            const rows: any = await goServer(`/api/records?page=${page}`, "GET", Config.headers);
             if( rows.result !== 99 ) {
                 let result: Array<RecentInfo> = [];
                 rows.forEach((value: any) => {
@@ -66,8 +67,58 @@ const Recent = (props: any) => {
         }
     }
 
+    const getPages = async () => {
+        try {
+            const rows: any = await goServer(`/api/pages`, "GET", Config.headers);
+            if( rows.result !== 99 ) {
+                setPages( Math.floor((rows[0].Count - 1) / 10) + 1 );
+            } else {
+                setPages(0);
+            }
+        } catch(e) {
+            setPages(0);
+            console.log(e);
+        }
+    }
+
+    const PageComponent = () => {
+        const result = [];
+
+        const queryData: any = QueryString.parse(location.search, { ignoreQueryPrefix: true });
+        const nowPage = queryData.page;
+
+        var start =  1 + Math.floor((nowPage - 1) / 10) * 10;
+        var end   = 10 + Math.floor((nowPage - 1) / 10) * 10;
+        if( end > pages ) { end = pages; }
+
+        if( start !== 1 ) {
+            result.push(
+                <li className="page-item" key={start-10}>
+                    <Link className="page-link" to={`/recent?page=${start-10}`} onClick={() => { getRecents(start-10);}}>{"<<"}</Link>
+                </li>
+            );
+        }
+        for(let i = start; i <= end; i++) {
+            result.push(
+                <li className="page-item" key={i}>
+                    <Link className="page-link" to={`/recent?page=${i}`} onClick={() => { getRecents(i);}}>{i}</Link>
+                </li>
+            );
+        }
+        if( end + 1 <= pages ) {
+            result.push(
+                <li className="page-item" key={end+1}>
+                    <Link className="page-link" to={`/recent?page=${end+1}`} onClick={() => { getRecents(end+1);}}>{">>"}</Link>
+                </li>
+            );
+        }
+        return result;
+    }
+
     useEffect(()=>{
-        get_recents();
+        const queryData: any = QueryString.parse(location.search, { ignoreQueryPrefix: true });
+        getRecents(queryData.page);
+        getPages();
         props.setLabel("최근 기록");
     }, []);
 
@@ -75,6 +126,12 @@ const Recent = (props: any) => {
         <div className="Main-Container">
             <div className="Main-Page">
                 { datas.map((value, index) => <RecentItem key={index} value={value} isLogin={props.isLogin} />) }
+
+                <nav>
+                    <ul className="pagination justify-content-center">
+                        { PageComponent() }
+                    </ul>
+                </nav>
             </div>
 
             <Button 

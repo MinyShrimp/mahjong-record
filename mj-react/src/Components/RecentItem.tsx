@@ -99,7 +99,7 @@ const RecentItem = (props: any) => {
                     <td colSpan={6}>
                         {props.value.index} /{" "}
                         {toStringByFormatting(props.value.update_time)}
-                        { props.value.link === "" ? null : <> <span> / </span> <a href={props.value.link} target='_blank'>패보</a> </> }
+                        { props.value.link === "" ? null : <> <span> / </span> <a className="btn btn-info btn-sm" href={props.value.link} target='_blank'>패보</a> </> }
                         { 
                             props.isLogin ? 
                             <> {" / "} 

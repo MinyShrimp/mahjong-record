@@ -101,6 +101,11 @@ export default class Database {
         return this._promise(sql, "insert index error");
     }
 
+    public getCountRecentIndex() {
+        const sql = 'SELECT COUNT(RecordIndex) AS Count FROM IndexRecord WHERE Ranking=1;';
+        return this._promise(sql, "select index error");
+    }
+
     public getRecentAllByIndexRecord(page: number) {
         const range = 10;
         const start = (page - 1) * range;

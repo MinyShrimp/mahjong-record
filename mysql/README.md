@@ -84,7 +84,7 @@ CREATE TABLE IndexRecord (
     Star          TINYINT DEFAULT 0,
     Perpect       VARCHAR(30) NOT NULL,
     Deposit       INT DEFAULT 0,
-    Link          VARCHAR(150),
+    Link          VARCHAR(150) DEFAULT "",
     UpdateTime    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET UTF8;
 ```

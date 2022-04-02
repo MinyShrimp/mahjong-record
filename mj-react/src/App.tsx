@@ -37,13 +37,13 @@ function App() {
 
             <Routes>
                 <Route path="/" element={<Record setLabel={setLabel} />} />
-                <Route path="/recent/:id" element={<Recent setLabel={setLabel} isLogin={isLogin} />} />
+                <Route path="/recent" element={<Recent setLabel={setLabel} isLogin={isLogin} />} />
             </Routes>
 
             <div className="navbar navbar-default fixed-bottom">
                 <div className="container">
                     <Link to="/" className='btn btn-default navbar-btn'>순위</Link>
-                    <Link to="/recent/1" className='btn btn-default navbar-btn'>최근 기록</Link>
+                    <Link to="/recent?page=1" className='btn btn-default navbar-btn'>최근 기록</Link>
                     <Link to="#" className='btn btn-default navbar-btn'>기타</Link>
                 </div>
             </div>

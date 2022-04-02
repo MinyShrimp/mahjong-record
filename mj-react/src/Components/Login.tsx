@@ -101,7 +101,6 @@ const Login = (props: any) => {
                     <Row style={{ textAlign: "center" }}>
                         <Col>
                             <Button 
-                                type="submit"
                                 onClick={postServer}
                             >Login</Button>
                         </Col>

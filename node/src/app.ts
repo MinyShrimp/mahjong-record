@@ -53,10 +53,15 @@ app.post('/api/records', async (req: Request, res: Response) => {
     }
 });
 
-app.get('/api/records/:id', async (req: Request, res: Response) => {
+app.get('/api/records', async (req: Request, res: Response) => {
     try {
-        const rows = await Database.getInstance().getRecentAllByIndexRecord(parseInt(req.params.id));
-        res.send(JSON.stringify(rows));
+        console.log(req.query.page)
+        const page: any = req.query.page;
+        if(page != undefined) {
+            const rows = await Database.getInstance().getRecentAllByIndexRecord(parseInt(page));
+            res.send(JSON.stringify(rows));
+        }
+        
     } catch(e) {
         console.log(e);
         res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
@@ -93,6 +98,19 @@ app.put('/api/records', authenticateAccessToken, async (req: Request, res: Respo
         res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
     }
 });
+
+//////////////////////////////////////////////////
+// /api/pages
+//////////////////////////////////////////////////
+app.get('/api/pages', async (req: Request, res: Response) => {
+    try {
+        const data = await Database.getInstance().getCountRecentIndex();
+        res.send(JSON.stringify(data));
+    } catch(e) {
+        console.log(e);
+        res.send(JSON.stringify({result: ErrorCode["UNDEFIND_ERROR"]}));
+    }
+})
 
 //////////////////////////////////////////////////
 // /api/users
