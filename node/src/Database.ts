@@ -6,13 +6,32 @@ export default class Database {
     private connection: Connection;
 
     private constructor() {
-        this.connection = createConnection({
-            host:     Config.MySQL.ip,
-            user:     Config.MySQL.id,
-            port:     Config.MySQL.port,
-            password: Config.MySQL.pwd,
-            database: Config.MySQL.database
-        });
+        if( Config.Mode === 'release' ) {
+            this.connection = createConnection({
+                host:     Config.R_MySQL.ip,
+                user:     Config.R_MySQL.id,
+                port:     Config.R_MySQL.port,
+                password: Config.R_MySQL.pwd,
+                database: Config.R_MySQL.database
+            });
+        } else if( Config.Mode === 'dev' ) {
+            this.connection = createConnection({
+                host:     Config.D_MySQL.ip,
+                user:     Config.D_MySQL.id,
+                port:     Config.D_MySQL.port,
+                password: Config.D_MySQL.pwd,
+                database: Config.D_MySQL.database
+            });
+        } else {
+            this.connection = createConnection({
+                host:     "",
+                user:     "",
+                port:     0,
+                password: "",
+                database: ""
+            });
+        }
+        
         this.connection.connect();
     }
 

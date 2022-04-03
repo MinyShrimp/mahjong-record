@@ -18,7 +18,10 @@ const jwt = require("jsonwebtoken");
 const Config_1 = __importDefault(require("./Config"));
 const Database_1 = __importDefault(require("./Database"));
 const Quicksort_1 = require("./Quicksort");
-const isCleanData = (datas, deposit) => {
+const isCleanData = (body) => {
+    const datas = body.users;
+    const deposit = body.deposit;
+    const link = body.link;
     if (deposit < 0) {
         return { result: false, contents: Interfaces_1.ErrorCode["MINUS_DEPOSIT"] };
     }
@@ -128,7 +131,8 @@ exports.authenticateAccessToken = authenticateAccessToken;
 const addRecord = (body) => __awaiter(void 0, void 0, void 0, function* () {
     let data = body.users;
     let deposit = body.deposit;
-    data = (0, Quicksort_1.QuickSort)(data);
+    let link = body.link;
+    data = (0, Quicksort_1.BubbleSort)(data);
     const plus_uma = (0, exports.getUmas)(data);
     data.forEach((value, index) => __awaiter(void 0, void 0, void 0, function* () {
         const rows = yield Database_1.default.getInstance().selectUserByUserRecord(value.name);
@@ -185,8 +189,10 @@ const addRecord = (body) => __awaiter(void 0, void 0, void 0, function* () {
         let star = value.star;
         let perpect = value.perpect;
         sql_data +=
-            `('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}'` +
-                (index === 0 ? `, ${deposit})` : `, 0)`);
+            `
+                ('${name}', ${recordIndex}, ${score}, ${ranking}, ${seat}, ${uma}, ${star}, '${perpect}',
+                ${index === 0 ? deposit : 0}, '${index === 0 ? link : ''}' )
+            `;
         sql_data += index === 3 ? ";" : ",";
     });
     yield Database_1.default.getInstance().insertIndexRecord(sql_data);

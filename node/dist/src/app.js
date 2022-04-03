@@ -47,16 +47,24 @@ const Config_1 = __importDefault(require("./Config"));
 const Database_1 = __importDefault(require("./Database"));
 const Functions_1 = require("./Functions");
 const app = (0, express_1.default)();
-const cor = (0, cors_1.default)({ origin: '*', optionsSuccessStatus: 200 });
-app.use(cor);
+var cor = {};
+if (Config_1.default.Mode === "release") {
+    cor = { origin: 'http://shrimp2ubt.ddns.net', optionsSuccessStatus: 200, credentials: true };
+}
+else if (Config_1.default.Mode === "dev") {
+    cor = { origin: 'http://localhost:3000', optionsSuccessStatus: 200, credentials: true };
+}
+app.use((0, cors_1.default)(cor));
 app.use(body_parser_1.default.json());
 app.use((0, morgan_1.default)('combined', { stream: morganMiddleware_1.stream }));
-app.get('/helloworld/:id', (req, res) => {
-    const salt = CryptoJS.lib.WordArray.random(128 / 8).toString();
-    const id = req.params.id;
-    const pwd = CryptoJS.SHA512(salt + CryptoJS.SHA512(id).toString()).toString();
-    res.send(JSON.stringify({ salt: salt, pwd: pwd }));
-});
+if (Config_1.default.Mode === "dev") {
+    app.get('/helloworld/:id', (req, res) => {
+        const salt = CryptoJS.lib.WordArray.random(128 / 8).toString();
+        const id = req.params.id;
+        const pwd = CryptoJS.SHA512(salt + CryptoJS.SHA512(id).toString()).toString();
+        res.send(JSON.stringify({ salt: salt, pwd: pwd }));
+    });
+}
 //////////////////////////////////////////////////
 // /api
 //////////////////////////////////////////////////
@@ -73,9 +81,7 @@ app.use('/api/:id', (req, res, next) => {
 //////////////////////////////////////////////////
 app.post('/api/records', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let data = req.body.users;
-        let deposit = req.body.deposit;
-        let data_test = (0, Functions_1.isCleanData)(data, deposit);
+        let data_test = (0, Functions_1.isCleanData)(req.body);
         if (data_test.result) {
             yield (0, Functions_1.addRecord)(req.body);
         }
@@ -86,10 +92,13 @@ app.post('/api/records', (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.send(JSON.stringify({ result: Interfaces_1.ErrorCode["UNDEFIND_ERROR"] }));
     }
 }));
-app.get('/api/records/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/records', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const rows = yield Database_1.default.getInstance().getRecentAllByIndexRecord(parseInt(req.params.id));
-        res.send(JSON.stringify(rows));
+        const page = req.query.page;
+        if (page != undefined) {
+            const rows = yield Database_1.default.getInstance().getRecentAllByIndexRecord(parseInt(page));
+            res.send(JSON.stringify(rows));
+        }
     }
     catch (e) {
         console.log(e);
@@ -110,7 +119,7 @@ app.put('/api/records', Functions_1.authenticateAccessToken, (req, res) => __awa
     try {
         let data = req.body.users;
         let deposit = req.body.deposit;
-        let data_test = (0, Functions_1.isCleanData)(data, deposit);
+        let data_test = (0, Functions_1.isCleanData)(req.body);
         if (data_test.result) {
             const fl = yield (0, Functions_1.deleteRecord)(req.body);
             if (fl) {
@@ -118,6 +127,19 @@ app.put('/api/records', Functions_1.authenticateAccessToken, (req, res) => __awa
             }
         }
         res.send(JSON.stringify({ result: data_test.contents }));
+    }
+    catch (e) {
+        console.log(e);
+        res.send(JSON.stringify({ result: Interfaces_1.ErrorCode["UNDEFIND_ERROR"] }));
+    }
+}));
+//////////////////////////////////////////////////
+// /api/pages
+//////////////////////////////////////////////////
+app.get('/api/pages', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield Database_1.default.getInstance().getCountRecentIndex();
+        res.send(JSON.stringify(data));
     }
     catch (e) {
         console.log(e);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QuickSort = void 0;
+exports.BubbleSort = exports.QuickSort = void 0;
 function QuickSort(arr, start = 0, end = arr.length) {
     if (start < end) {
         let p = partition(arr, start, end);
@@ -27,3 +27,15 @@ function swap(arr, i, j) {
     arr[i] = arr[j];
     arr[j] = temp;
 }
+function BubbleSort(arr) {
+    var len = arr.length;
+    for (var i = len - 1; i > 0; i--) {
+        for (var j = 0; j < i; j++) {
+            if (arr[i].score > arr[j].score) {
+                swap(arr, i, j);
+            }
+        }
+    }
+    return arr;
+}
+exports.BubbleSort = BubbleSort;

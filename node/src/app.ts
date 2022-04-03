@@ -12,17 +12,22 @@ import Database                  from "./Database";
 import { isCleanData, generateAccessToken, generateRefreshToken, authenticateAccessToken, deleteRecord, addRecord } from "./Functions";
 
 const app = express();
-const cor = cors({ origin: '*', optionsSuccessStatus: 200 });
-app.use(cor);
+
+var cor = {};
+if     ( Config.Mode === "release" ) { cor = { origin: 'http://shrimp2ubt.ddns.net', optionsSuccessStatus: 200, credentials: true }; }
+else if( Config.Mode === "dev" )     { cor = { origin: 'http://localhost:3000',      optionsSuccessStatus: 200, credentials: true }; }
+app.use(cors(cor));
 app.use(bodyParser.json());
 app.use(morgan('combined', {stream}));
 
-app.get('/helloworld/:id', (req: Request, res: Response) => {
-    const salt = CryptoJS.lib.WordArray.random(128/8).toString();
-    const id  = req.params.id;
-    const pwd = CryptoJS.SHA512( salt + CryptoJS.SHA512(id).toString() ).toString();
-    res.send(JSON.stringify({ salt: salt, pwd: pwd }));
-})
+if( Config.Mode === "dev" ) {
+    app.get('/helloworld/:id', (req: Request, res: Response) => {
+        const salt = CryptoJS.lib.WordArray.random(128/8).toString();
+        const id  = req.params.id;
+        const pwd = CryptoJS.SHA512( salt + CryptoJS.SHA512(id).toString() ).toString();
+        res.send(JSON.stringify({ salt: salt, pwd: pwd }));
+    });
+}
 
 //////////////////////////////////////////////////
 // /api

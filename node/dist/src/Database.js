@@ -29,13 +29,33 @@ class Database {
                 });
             });
         });
-        this.connection = (0, mysql_1.createConnection)({
-            host: Config_1.default.MySQL.ip,
-            user: Config_1.default.MySQL.id,
-            port: Config_1.default.MySQL.port,
-            password: Config_1.default.MySQL.pwd,
-            database: Config_1.default.MySQL.database
-        });
+        if (Config_1.default.Mode === 'release') {
+            this.connection = (0, mysql_1.createConnection)({
+                host: Config_1.default.R_MySQL.ip,
+                user: Config_1.default.R_MySQL.id,
+                port: Config_1.default.R_MySQL.port,
+                password: Config_1.default.R_MySQL.pwd,
+                database: Config_1.default.R_MySQL.database
+            });
+        }
+        else if (Config_1.default.Mode === 'dev') {
+            this.connection = (0, mysql_1.createConnection)({
+                host: Config_1.default.D_MySQL.ip,
+                user: Config_1.default.D_MySQL.id,
+                port: Config_1.default.D_MySQL.port,
+                password: Config_1.default.D_MySQL.pwd,
+                database: Config_1.default.D_MySQL.database
+            });
+        }
+        else {
+            this.connection = (0, mysql_1.createConnection)({
+                host: "",
+                user: "",
+                port: 0,
+                password: "",
+                database: ""
+            });
+        }
         this.connection.connect();
     }
     static getInstance() {
@@ -100,10 +120,14 @@ class Database {
     insertIndexRecord(data) {
         const sql = `
             INSERT INTO 
-            IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit) 
+            IndexRecord(Name, RecordIndex, Score, Ranking, Seat, Uma, Star, Perpect, Deposit, Link) 
             ${data};
         `;
         return this._promise(sql, "insert index error");
+    }
+    getCountRecentIndex() {
+        const sql = 'SELECT COUNT(RecordIndex) AS Count FROM IndexRecord WHERE Ranking=1;';
+        return this._promise(sql, "select index error");
     }
     getRecentAllByIndexRecord(page) {
         const range = 10;
@@ -112,7 +136,7 @@ class Database {
             SELECT 
                 b.RecordIndex, a.Names, a.Rankings, a.Scores, 
                 a.Seats, a.Perpects, a.Umas, a.Stars, 
-                b.UpdateTime, b.Deposit
+                b.Deposit, b.Link, b.UpdateTime
             FROM IndexRecord AS b
             JOIN (
                 SELECT 

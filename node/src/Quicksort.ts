@@ -35,3 +35,15 @@ function swap(arr: Array<Info>, i: number, j: number) {
     arr[i] = arr[j];
     arr[j] = temp;
 }
+
+export function BubbleSort (arr: Array<Info>) {
+    var len = arr.length;
+    for( var i = len - 1; i > 0; i-- ) {
+        for( var j = 0; j < i; j++ ) {
+            if( arr[i].score > arr[j].score ) {
+                swap( arr, i, j );
+            }
+        }
+    }
+    return arr;
+}

@@ -3,7 +3,7 @@ import { Info, Test, ErrorCode } from "./Interfaces";
 const jwt = require("jsonwebtoken");
 import Config from "./Config";
 import Database from "./Database";
-import { QuickSort } from "./Quicksort";
+import { BubbleSort } from "./Quicksort";
 
 export const isCleanData = (body: any): Test => {
     const datas:   Array<Info>   = body.users;
@@ -136,7 +136,7 @@ export const addRecord = async (body: any) => {
     let deposit: number   = body.deposit;
     let link:    string   = body.link;
 
-    data = QuickSort(data);
+    data = BubbleSort(data);
     const plus_uma = getUmas(data);
 
     data.forEach(async (value: Info, index: number) => {
