@@ -132,33 +132,35 @@ const FixRecord = (props: any) => {
                                     <Col xs={4} className="input-pd">
                                     <div className="input-group">
                                            <div className="input-group-btn">
-                                               {
-                                                   isPluses[index] ? 
-                                                   <button 
-                                                       className="btn btn-info"
-                                                       onClick={() => { 
-                                                           var _tmp = [...isPluses];
-                                                           _tmp[index] = false;
-                                                           setIsPluses(_tmp); 
+                                                {
+                                                    isPluses[index] ? 
+                                                    <button 
+                                                        type="button"
+                                                        className="btn btn-info"
+                                                        onClick={() => { 
+                                                            var _tmp = [...isPluses];
+                                                            _tmp[index] = false;
+                                                            setIsPluses(_tmp); 
 
-                                                           var _info = JSON.parse(JSON.stringify(props.info));
-                                                           _info.users[index].score *= _info.users[index].score < 0 ? 1 : -1;
-                                                           props.setInfo(_info);
-                                                       }}
-                                                   >＋</button> :
-                                                   <button 
-                                                       className="btn btn-danger"
-                                                       onClick={() => { 
-                                                           var _tmp = [...isPluses];
-                                                           _tmp[index] = true;
-                                                           setIsPluses(_tmp); 
+                                                            var _info = JSON.parse(JSON.stringify(props.info));
+                                                            _info.users[index].score *= _info.users[index].score < 0 ? 1 : -1;
+                                                            props.setInfo(_info);
+                                                        }}
+                                                    >＋</button> :
+                                                    <button 
+                                                        type="button"
+                                                        className="btn btn-danger"
+                                                        onClick={() => { 
+                                                            var _tmp = [...isPluses];
+                                                            _tmp[index] = true;
+                                                            setIsPluses(_tmp); 
 
-                                                           var _info = JSON.parse(JSON.stringify(props.info));
-                                                           _info.users[index].score *= _info.users[index].score > 0 ? 1 : -1;
-                                                           props.setInfo(_info);
-                                                       }}
-                                                   >－</button>
-                                               }
+                                                            var _info = JSON.parse(JSON.stringify(props.info));
+                                                            _info.users[index].score *= _info.users[index].score > 0 ? 1 : -1;
+                                                            props.setInfo(_info);
+                                                        }}
+                                                    >－</button>
+                                                }
                                            </div>
                                            <Form.Control  
                                                 placeholder="점수" 

@@ -126,31 +126,33 @@ const AddRecord = (props: any) => {
                                         <div className="input-group">
                                            <div className="input-group-btn">
                                                {
-                                                   isPluses[index] ? 
-                                                   <button 
-                                                       className="btn btn-info"
-                                                       onClick={() => { 
-                                                           var _tmp = [...isPluses];
-                                                           _tmp[index] = false;
-                                                           setIsPluses(_tmp); 
+                                                    isPluses[index] ? 
+                                                    <button 
+                                                        type="button"
+                                                        className="btn btn-info"
+                                                        onClick={() => { 
+                                                            var _tmp = [...isPluses];
+                                                            _tmp[index] = false;
+                                                            setIsPluses(_tmp); 
 
-                                                           var _users = [...infos];
-                                                           _users[index].score *= _users[index].score < 0 ? 1 : -1;
-                                                           setInfos(_users);
+                                                            var _users = [...infos];
+                                                            _users[index].score *= _users[index].score < 0 ? 1 : -1;
+                                                            setInfos(_users);
                                                        }}
-                                                   >＋</button> :
-                                                   <button 
-                                                       className="btn btn-danger"
-                                                       onClick={() => { 
-                                                           var _tmp = [...isPluses];
-                                                           _tmp[index] = true;
-                                                           setIsPluses(_tmp); 
+                                                    >＋</button> :
+                                                    <button 
+                                                        type="button"
+                                                        className="btn btn-danger"
+                                                        onClick={() => { 
+                                                            var _tmp = [...isPluses];
+                                                            _tmp[index] = true;
+                                                            setIsPluses(_tmp); 
 
-                                                           var _users = [...infos];
-                                                           _users[index].score *= _users[index].score > 0 ? 1 : -1;
-                                                           setInfos(_users);
-                                                       }}
-                                                   >－</button>
+                                                            var _users = [...infos];
+                                                            _users[index].score *= _users[index].score > 0 ? 1 : -1;
+                                                            setInfos(_users);
+                                                        }}
+                                                    >－</button>
                                                }
                                            </div>
                                            <input 
